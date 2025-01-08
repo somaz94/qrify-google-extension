@@ -1,0 +1,142 @@
+/* 라이트 모드 (기본) */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --border-color: #dddddd;
+    --input-bg: #ffffff;
+    --button-bg: #1a73e8;
+    --button-hover: #1557b0;
+}
+
+/* 다크 모드 */
+[data-theme="dark"] {
+    --bg-color: #202124;
+    --text-color: #e8eaed;
+    --border-color: #5f6368;
+    --input-bg: #303134;
+    --button-bg: #8ab4f8;
+    --button-hover: #93b7f8;
+}
+
+body {
+    width: 320px;
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+    background-color: var(--border-color);
+}
+
+input {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+button {
+    padding: 8px 16px;
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.style-section {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1a73e8;
+    text-align: center;
+}
+
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#current-url-btn {
+    background-color: #34a853;
+}
+
+#current-url-btn:hover {
+    background-color: #2d8544;
+}
+
+.qr-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.hidden {
+    display: none;
+}
+
+.color-picker {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.color-picker label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.size-picker {
+    margin-top: 10px;
+}
+
+.button-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#share-btn {
+    background-color: #4285f4;
+}
+
+#share-btn:hover {
+    background-color: #3367d6;
+}

@@ -1,0 +1,21 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# Build output
+dist/
+build/
+*.zip
+
+# Chrome Extension specific
+*.pem
+*.crx
