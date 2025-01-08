@@ -3,7 +3,7 @@
 QRify is a Chrome extension that allows you to quickly and easily generate QR codes.
 
 ## Screenshot
-![QRify App](./img/app.png)
+<img src="./img/app.png" width="100" alt="QRify App">
 
 ## Features
 
