@@ -29,8 +29,9 @@
             <div class="size-picker">
                 <label>크기:
                     <select id="qr-size">
-                        <option value="128">작게</option>
-                        <option value="256" selected>보통</option>
+                        <option value="64">더 작게</option>
+                        <option value="128" selected>작게</option>
+                        <option value="256">보통</option>
                         <option value="512">크게</option>
                     </select>
                 </label>
@@ -43,6 +44,7 @@
                 <button id="share-btn" class="hidden">공유하기</button>
             </div>
         </div>
+        <!-- 히스토리 섹션은 JavaScript에서 동적으로 추가됩니다 -->
     </div>
     <script src="../lib/qrcode.min.js"></script>
     <script src="popup.js"></script>

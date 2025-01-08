@@ -65,8 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     files: [file]
                 });
             } catch (error) {
-                console.error('공유 실패:', error);
-                alert('공유하기를 실패했습니다.');
+                // 공유 취소(AbortError)는 무시
+                if (error.name !== 'AbortError') {
+                    console.error('공유 실패:', error);
+                    alert('공유하기를 실패했습니다.');
+                }
             }
         } else {
             alert('이 브라우저는 공유 기능을 지원하지 않습니다.');
@@ -78,12 +81,59 @@ document.addEventListener('DOMContentLoaded', () => {
             let history = result.qrHistory || [];
             history.push({
                 text: text,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                qrColor: qrColor.value,
+                bgColor: bgColor.value,
+                size: qrSize.value
             });
             if (history.length > 10) {
                 history = history.slice(-10);
             }
             chrome.storage.local.set({ qrHistory: history });
+            updateHistoryUI(history);
+        });
+    }
+
+    function updateHistoryUI(history) {
+        // 기존 히스토리 섹션 제거
+        const existingHistory = document.querySelector('.history-section');
+        if (existingHistory) {
+            existingHistory.remove();
+        }
+
+        // 새 히스토리 섹션 생성
+        const historyContainer = document.createElement('div');
+        historyContainer.className = 'history-section';
+        historyContainer.innerHTML = `
+            <h3>최근 기록</h3>
+            <div class="history-list">
+                ${history.reverse().map(item => `
+                    <div class="history-item" data-text="${item.text}" 
+                         data-qr-color="${item.qrColor}" 
+                         data-bg-color="${item.bgColor}"
+                         data-size="${item.size}">
+                        <span class="history-text">${item.text}</span>
+                        <span class="history-time">${new Date(item.timestamp).toLocaleString()}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // container의 마지막에 히스토리 섹션 추가
+        const container = document.querySelector('.container');
+        if (container) {
+            container.appendChild(historyContainer);
+        }
+
+        // 히스토리 아이템 클릭 이벤트
+        document.querySelectorAll('.history-item').forEach(item => {
+            item.addEventListener('click', () => {
+                qrText.value = item.dataset.text;
+                qrColor.value = item.dataset.qrColor;
+                bgColor.value = item.dataset.bgColor;
+                qrSize.value = item.dataset.size;
+                generateQRCode();
+            });
         });
     }
 
@@ -129,32 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.title = theme === 'dark' ? '라이트모드로 전환' : '다크모드로 전환';
     }
 
-    function updateColorPreview(input) {
-        const preview = input.parentElement.querySelector('.color-preview');
-        preview.textContent = input.value.toUpperCase();
-    }
-
-    function updateSizeValue(input) {
-        const sizeValue = input.parentElement.querySelector('.size-value');
-        sizeValue.textContent = `${input.value} x ${input.value}`;
-    }
-
-    qrColor.addEventListener('input', (e) => {
-        updateColorPreview(e.target);
-        generateQRCode();
+    // 초기 히스토리 로드
+    chrome.storage.local.get(['qrHistory'], function(result) {
+        if (result.qrHistory) {
+            updateHistoryUI(result.qrHistory);
+        }
     });
-
-    bgColor.addEventListener('input', (e) => {
-        updateColorPreview(e.target);
-        generateQRCode();
-    });
-
-    qrSize.addEventListener('input', (e) => {
-        updateSizeValue(e.target);
-        generateQRCode();
-    });
-
-    updateColorPreview(qrColor);
-    updateColorPreview(bgColor);
-    updateSizeValue(qrSize);
 });
