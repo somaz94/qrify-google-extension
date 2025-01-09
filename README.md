@@ -34,6 +34,11 @@ QRify is a Chrome extension that allows you to quickly and easily generate QR co
 
 ## Installation
 
+### From Chrome Web Store
+1. Visit [QRify](https://chromewebstore.google.com/detail/qrify/docgjoppdhbahapgbemfadlkgchnmecc)
+2. Click "Add to Chrome"
+
+### From Source
 1. Clone or download this repository
 2. Open `chrome://extensions` in Chrome browser
 3. Enable 'Developer mode' in the top right
