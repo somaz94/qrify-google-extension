@@ -41,7 +41,14 @@ QRify is a Chrome extension that allows you to quickly and easily generate QR co
 - HTML/CSS/JavaScript
 - QRCode.js library
 - Every user-visible string is a key in `_locales/<language>/messages.json`; a new string needs the key in every language
-- `node --test 'tests/*.test.mjs'` checks that the catalogs have the same keys and placeholders, and that every key the code uses exists
+- `make test` checks that the catalogs have the same keys and placeholders, and that every key the code uses exists
+- `make package` writes the Chrome Web Store ZIP to `dist/`; `make help` lists every target
+
+### Release
+
+1. `make bump-version VERSION=x.y.z`, then commit `manifest.json`
+2. Push an annotated tag `vX.Y.Z`; the release workflow builds `qrify-vX.Y.Z.zip` and attaches it to a GitHub Release with notes from git-cliff
+3. Upload that ZIP in the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
 
 <br/>
 
