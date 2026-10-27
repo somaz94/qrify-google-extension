@@ -1,0 +1,80 @@
+{
+  "htmlLang": {
+    "message": "ko"
+  },
+  "extDescription": {
+    "message": "간단한 QR 코드 생성기"
+  },
+  "commandOpen": {
+    "message": "QR 코드 생성기 열기"
+  },
+  "themeToDark": {
+    "message": "다크 모드로 전환"
+  },
+  "themeToLight": {
+    "message": "라이트 모드로 전환"
+  },
+  "textPlaceholder": {
+    "message": "텍스트나 URL을 입력하세요"
+  },
+  "generate": {
+    "message": "QR 코드 생성"
+  },
+  "currentUrl": {
+    "message": "현재 페이지 URL"
+  },
+  "qrColor": {
+    "message": "QR 색상:"
+  },
+  "bgColor": {
+    "message": "배경 색상:"
+  },
+  "size": {
+    "message": "크기:"
+  },
+  "sizeExtraSmall": {
+    "message": "더 작게"
+  },
+  "sizeSmall": {
+    "message": "작게"
+  },
+  "sizeMedium": {
+    "message": "보통"
+  },
+  "sizeLarge": {
+    "message": "크게"
+  },
+  "download": {
+    "message": "다운로드"
+  },
+  "share": {
+    "message": "공유하기"
+  },
+  "historyTitle": {
+    "message": "최근 기록"
+  },
+  "errorEmptyText": {
+    "message": "텍스트를 입력해 주세요."
+  },
+  "shareTitle": {
+    "message": "QR 코드"
+  },
+  "shareText": {
+    "message": "QRify로 만든 QR 코드"
+  },
+  "shareFailed": {
+    "message": "QR 코드를 공유하지 못했습니다."
+  },
+  "shareUnsupported": {
+    "message": "이 브라우저는 파일 공유를 지원하지 않습니다."
+  },
+  "menuSelection": {
+    "message": "선택한 텍스트로 QR 코드 생성"
+  },
+  "menuImage": {
+    "message": "이미지 URL로 QR 코드 생성"
+  },
+  "menuLink": {
+    "message": "링크로 QR 코드 생성"
+  }
+}

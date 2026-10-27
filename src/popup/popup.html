@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="popup.css">
@@ -8,31 +8,31 @@
     <div class="container">
         <div class="header">
             <h1>QRify</h1>
-            <button id="theme-toggle" class="theme-toggle" title="다크모드 전환">
+            <button id="theme-toggle" class="theme-toggle" data-i18n-title="themeToDark">
                 🌙
             </button>
         </div>
         <div class="input-section">
-            <input type="text" id="qr-text" placeholder="텍스트나 URL을 입력하세요">
-            <button id="generate-btn">QR 코드 생성</button>
-            <button id="current-url-btn">현재 페이지 URL</button>
+            <input type="text" id="qr-text" data-i18n-placeholder="textPlaceholder">
+            <button id="generate-btn" data-i18n="generate"></button>
+            <button id="current-url-btn" data-i18n="currentUrl"></button>
         </div>
         <div class="style-section">
             <div class="color-picker">
-                <label>QR 색상:
+                <label><span data-i18n="qrColor"></span>
                     <input type="color" id="qr-color" value="#000000">
                 </label>
-                <label>배경 색상:
+                <label><span data-i18n="bgColor"></span>
                     <input type="color" id="bg-color" value="#ffffff">
                 </label>
             </div>
             <div class="size-picker">
-                <label>크기:
+                <label><span data-i18n="size"></span>
                     <select id="qr-size">
-                        <option value="64">더 작게</option>
-                        <option value="128" selected>작게</option>
-                        <option value="256">보통</option>
-                        <option value="512">크게</option>
+                        <option value="64" data-i18n="sizeExtraSmall"></option>
+                        <option value="128" selected data-i18n="sizeSmall"></option>
+                        <option value="256" data-i18n="sizeMedium"></option>
+                        <option value="512" data-i18n="sizeLarge"></option>
                     </select>
                 </label>
             </div>
@@ -40,13 +40,13 @@
         <div class="qr-section">
             <div id="qr-code"></div>
             <div class="button-group">
-                <button id="download-btn" class="hidden">다운로드</button>
-                <button id="share-btn" class="hidden">공유하기</button>
+                <button id="download-btn" class="hidden" data-i18n="download"></button>
+                <button id="share-btn" class="hidden" data-i18n="share"></button>
             </div>
         </div>
         <!-- 히스토리 섹션은 JavaScript에서 동적으로 추가됩니다 -->
     </div>
     <script src="../lib/qrcode.min.js"></script>
-    <script src="popup.js"></script>
+    <script src="popup.js" type="module"></script>
 </body>
 </html>

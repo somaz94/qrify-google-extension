@@ -7,21 +7,21 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "generateQR",
-    title: "텍스트로 QR코드 생성",
+    title: chrome.i18n.getMessage("menuSelection"),
     contexts: ["selection"]
   });
 
   // 이미지용 메뉴
   chrome.contextMenus.create({
     id: "generateQRFromImage",
-    title: "이미지 URL로 QR코드 생성",
+    title: chrome.i18n.getMessage("menuImage"),
     contexts: ["image"]
   });
 
   // 링크용 메뉴
   chrome.contextMenus.create({
     id: "generateQRFromLink",
-    title: "링크로 QR코드 생성",
+    title: chrome.i18n.getMessage("menuLink"),
     contexts: ["link"]
   });
 });

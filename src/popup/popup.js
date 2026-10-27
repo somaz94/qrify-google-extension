@@ -1,3 +1,5 @@
+import { applyTranslations, t } from '../i18n.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const qrText = document.getElementById('qr-text');
     const generateBtn = document.getElementById('generate-btn');
@@ -21,13 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleTheme();
     });
 
+    applyTranslations();
     initTheme();
 
     function generateQRCode() {
         const text = qrText.value.trim();
         
         if (!text) {
-            alert('텍스트를 입력해주세요!');
+            alert(t('errorEmptyText'));
             return;
         }
 
@@ -60,19 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const blob = await (await fetch(img.src)).blob();
                 const file = new File([blob], 'qrcode.png', { type: 'image/png' });
                 await navigator.share({
-                    title: 'QR Code',
-                    text: 'QRify로 생성된 QR 코드',
+                    title: t('shareTitle'),
+                    text: t('shareText'),
                     files: [file]
                 });
             } catch (error) {
                 // 공유 취소(AbortError)는 무시
                 if (error.name !== 'AbortError') {
-                    console.error('공유 실패:', error);
-                    alert('공유하기를 실패했습니다.');
+                    console.error('Sharing failed:', error);
+                    alert(t('shareFailed'));
                 }
             }
         } else {
-            alert('이 브라우저는 공유 기능을 지원하지 않습니다.');
+            alert(t('shareUnsupported'));
         }
     }
 
@@ -105,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const historyContainer = document.createElement('div');
         historyContainer.className = 'history-section';
         historyContainer.innerHTML = `
-            <h3>최근 기록</h3>
+            <h3>${t('historyTitle')}</h3>
             <div class="history-list">
                 ${history.reverse().map(item => `
                     <div class="history-item" data-text="${item.text}" 
@@ -176,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateThemeToggleButton(theme) {
         themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-        themeToggle.title = theme === 'dark' ? '라이트모드로 전환' : '다크모드로 전환';
+        themeToggle.title = t(theme === 'dark' ? 'themeToLight' : 'themeToDark');
     }
 
     // 초기 히스토리 로드

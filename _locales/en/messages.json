@@ -1,0 +1,80 @@
+{
+  "htmlLang": {
+    "message": "en"
+  },
+  "extDescription": {
+    "message": "Simple QR code generator extension"
+  },
+  "commandOpen": {
+    "message": "Open the QR code generator"
+  },
+  "themeToDark": {
+    "message": "Switch to dark mode"
+  },
+  "themeToLight": {
+    "message": "Switch to light mode"
+  },
+  "textPlaceholder": {
+    "message": "Enter text or a URL"
+  },
+  "generate": {
+    "message": "Generate QR code"
+  },
+  "currentUrl": {
+    "message": "Current page URL"
+  },
+  "qrColor": {
+    "message": "QR color:"
+  },
+  "bgColor": {
+    "message": "Background:"
+  },
+  "size": {
+    "message": "Size:"
+  },
+  "sizeExtraSmall": {
+    "message": "Extra small"
+  },
+  "sizeSmall": {
+    "message": "Small"
+  },
+  "sizeMedium": {
+    "message": "Medium"
+  },
+  "sizeLarge": {
+    "message": "Large"
+  },
+  "download": {
+    "message": "Download"
+  },
+  "share": {
+    "message": "Share"
+  },
+  "historyTitle": {
+    "message": "Recent"
+  },
+  "errorEmptyText": {
+    "message": "Enter some text first."
+  },
+  "shareTitle": {
+    "message": "QR code"
+  },
+  "shareText": {
+    "message": "QR code made with QRify"
+  },
+  "shareFailed": {
+    "message": "Could not share the QR code."
+  },
+  "shareUnsupported": {
+    "message": "This browser cannot share files."
+  },
+  "menuSelection": {
+    "message": "Generate a QR code from the selected text"
+  },
+  "menuImage": {
+    "message": "Generate a QR code from the image URL"
+  },
+  "menuLink": {
+    "message": "Generate a QR code from the link"
+  }
+}
