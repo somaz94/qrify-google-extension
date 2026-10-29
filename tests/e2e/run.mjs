@@ -358,8 +358,8 @@ const toggleTheme = (popup) => popup.evaluate(`(() => {
   toggle.click();
   return toggle.textContent;
 })()`);
-// The buttons fade to the new colors over 0.2 s.
-const settle = (popup) => popup.evaluate(`new Promise((resolve) => setTimeout(resolve, 300))`);
+// The buttons fade to the new colors over 0.2 s, and a background tab may not advance the fade on its own.
+const settle = (popup) => popup.evaluate(`document.getAnimations().forEach((animation) => animation.finish())`);
 
 async function theme(popup) {
   console.log('theme');
