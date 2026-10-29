@@ -6,6 +6,10 @@ export function addEntry(history, entry) {
   return [...history.filter((item) => item.text !== entry.text), entry].slice(-HISTORY_LIMIT);
 }
 
+export function removeEntry(history, text) {
+  return history.filter((item) => item.text !== text);
+}
+
 export function newestFirst(history) {
   return [...history].reverse();
 }

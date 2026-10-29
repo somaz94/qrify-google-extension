@@ -56,6 +56,12 @@
   "historyTitle": {
     "message": "Recent"
   },
+  "historyClear": {
+    "message": "Clear all"
+  },
+  "historyRemove": {
+    "message": "Remove from Recent"
+  },
   "errorEmptyText": {
     "message": "Enter some text first."
   },

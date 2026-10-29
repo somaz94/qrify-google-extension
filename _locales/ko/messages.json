@@ -56,6 +56,12 @@
   "historyTitle": {
     "message": "최근 기록"
   },
+  "historyClear": {
+    "message": "모두 지우기"
+  },
+  "historyRemove": {
+    "message": "최근 기록에서 삭제"
+  },
   "errorEmptyText": {
     "message": "텍스트를 입력해 주세요."
   },

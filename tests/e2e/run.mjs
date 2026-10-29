@@ -215,6 +215,26 @@ async function history(popup) {
     return { ...listed, restored: document.getElementById('qr-text').value };
   })()`);
   check('quotes and markup are listed and restored as plain text', shown, { text: tricky, markup: false, restored: tricky });
+
+  const removed = await popup.evaluate(`(async () => {
+    const before = document.getElementById('qr-text').value;
+    const second = [...document.querySelectorAll('.history-item')].find((item) => item.querySelector('.history-text').textContent === 'second');
+    const list = document.querySelector('.history-section');
+    second.querySelector('.history-remove').click();
+    for (let i = 0; i < 50 && document.querySelector('.history-section') === list; i += 1) await new Promise((resolve) => setTimeout(resolve, 50));
+    return { left: [...document.querySelectorAll('.history-text')].map((item) => item.textContent), input: document.getElementById('qr-text').value === before };
+  })()`);
+  check('× removes one entry without opening it', removed, { left: [tricky, 'first'], input: true });
+
+  await popup.reload();
+  await popup.evaluate(CAPTURE_ALERTS + WAIT_FOR_IMAGE);
+  check('the removal sticks', (await state(popup)).history, [tricky, 'first']);
+  const cleared = await popup.evaluate(`(async () => {
+    document.querySelector('.history-clear').click();
+    for (let i = 0; i < 50 && document.querySelector('.history-section'); i += 1) await new Promise((resolve) => setTimeout(resolve, 50));
+    return { section: !!document.querySelector('.history-section'), stored: (await chrome.storage.local.get('qrHistory')).qrHistory };
+  })()`);
+  check('Clear all empties the list and the storage', cleared, { section: false, stored: [] });
 }
 
 async function menus(chrome) {

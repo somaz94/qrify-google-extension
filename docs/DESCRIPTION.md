@@ -23,7 +23,7 @@ Make it yours
 - Download the code as a PNG, or share it through your system's share sheet
 
 Pick up where you left off
-- The last ten codes stay in a Recent list with their colors and size, one click from reopening
+- The last ten codes stay in a Recent list with their colors and size, one click from reopening, and you can remove any of them
 - A light and a dark theme, following the system unless you pick one
 - English and Korean, following the browser language
 

@@ -1,6 +1,6 @@
 import { applyTranslations, t } from '../i18n.js';
 import { debounce } from '../lib/debounce.js';
-import { addEntry, loadHistory, newestFirst, saveHistory } from '../lib/history.js';
+import { addEntry, loadHistory, newestFirst, removeEntry, saveHistory } from '../lib/history.js';
 import { queuedText } from '../lib/menus.js';
 import { encode, layout, paint } from '../lib/qr.js';
 import { loadStyle, saveStyle, validStyle } from '../lib/style.js';
@@ -68,17 +68,22 @@ function drawCode(text, modules) {
 
 async function remember(text) {
   const entry = { text, timestamp: new Date().toISOString(), qrColor: qrColor.value, bgColor: bgColor.value, size: qrSize.value };
-  const history = addEntry(await loadHistory(storage), entry);
-  await saveHistory(storage, history);
-  renderHistory(history);
+  await updateHistory(addEntry(await loadHistory(storage), entry));
 }
 
 function renderHistory(history) {
   document.querySelector('.history-section')?.remove();
+  if (!history.length) return;
 
   const section = element('div', 'history-section');
+  const header = element('div', 'history-header');
   const title = element('h3');
   title.textContent = t('historyTitle');
+  const clear = element('button', 'history-clear');
+  clear.textContent = t('historyClear');
+  clear.addEventListener('click', () => updateHistory([]));
+  header.append(title, clear);
+
   const list = element('div', 'history-list');
   for (const entry of newestFirst(history)) {
     const item = element('div', 'history-item');
@@ -86,7 +91,15 @@ function renderHistory(history) {
     text.textContent = entry.text;
     const time = element('span', 'history-time');
     time.textContent = new Date(entry.timestamp).toLocaleString();
-    item.append(text, time);
+    const remove = element('button', 'history-remove');
+    remove.textContent = '×';
+    remove.title = t('historyRemove');
+    remove.setAttribute('aria-label', remove.title);
+    remove.addEventListener('click', async (event) => {
+      event.stopPropagation();
+      updateHistory(removeEntry(await loadHistory(storage), entry.text));
+    });
+    item.append(text, time, remove);
     item.addEventListener('click', () => {
       qrText.value = entry.text;
       showStyle(validStyle(entry));
@@ -94,8 +107,13 @@ function renderHistory(history) {
     });
     list.append(item);
   }
-  section.append(title, list);
+  section.append(header, list);
   document.querySelector('.container').append(section);
+}
+
+async function updateHistory(history) {
+  await saveHistory(storage, history);
+  renderHistory(history);
 }
 
 function element(tag, className) {
@@ -186,8 +204,7 @@ migrateTheme(storage).then((moved) => moved && renderTheme(themer.refresh()));
 
 async function start() {
   showStyle(await loadStyle(storage));
-  const history = await loadHistory(storage);
-  if (history.length) renderHistory(history);
+  renderHistory(await loadHistory(storage));
 
   // Set by a right-click menu, which opens this page in a tab.
   const queued = queuedText(location.search);

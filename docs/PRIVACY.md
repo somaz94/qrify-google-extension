@@ -36,4 +36,4 @@ QRify cannot read the content of your pages, your cookies or your browsing histo
 
 ## Removing your data
 
-Removing the extension deletes everything it stored. To keep the extension but clear the list and the theme, open the popup's DevTools (right-click the popup, **Inspect**) and run `chrome.storage.local.clear(); localStorage.clear()`.
+Remove one code from the **Recent** list with its `×` button, or all of them with **Clear all**. Removing the extension deletes everything it stored, including the colors, the size and the theme.

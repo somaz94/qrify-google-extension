@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals';
-import { addEntry, HISTORY_KEY, HISTORY_LIMIT, loadHistory, newestFirst, saveHistory } from '../src/lib/history.js';
+import { addEntry, HISTORY_KEY, HISTORY_LIMIT, loadHistory, newestFirst, removeEntry, saveHistory } from '../src/lib/history.js';
 import { fakeStorage } from './helpers/storage.js';
 
 const entry = (text) => ({ text });
@@ -17,6 +17,11 @@ describe('history', () => {
   test('addEntry moves an existing text to the newest place instead of adding it twice', () => {
     const history = addEntry([{ text: 'a', size: '128' }, entry('b')], { text: 'a', size: '256' });
     expect(history).toEqual([entry('b'), { text: 'a', size: '256' }]);
+  });
+
+  test('removeEntry drops the entry for a text and keeps the rest in order', () => {
+    expect(removeEntry([entry('a'), entry('b'), entry('c')], 'b')).toEqual([entry('a'), entry('c')]);
+    expect(removeEntry([entry('a')], 'x')).toEqual([entry('a')]);
   });
 
   test('newestFirst reverses without touching the stored order', () => {
