@@ -56,6 +56,9 @@
   "errorEmptyText": {
     "message": "Enter some text first."
   },
+  "errorTooLong": {
+    "message": "This text is too long for a QR code."
+  },
   "shareTitle": {
     "message": "QR code"
   },

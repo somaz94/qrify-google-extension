@@ -53,8 +53,8 @@ async function generating(popup) {
   console.log('generating');
   await prepare(popup);
   check('nothing to download before a code exists', (await state(popup)).buttons, []);
-  // 'https://example.com' at the highest error correction is version 3, 29 modules: 128 px plus 2 x 18 px.
-  check('Generate draws a 128 px code with its margin', await generate(popup, 'https://example.com'), { width: 164, height: 164 });
+  // 'https://example.com' at the highest error correction is version 3, 29 modules of 4 px plus 4 modules a side.
+  check('Generate draws a Small code with its margin', await generate(popup, 'https://example.com'), { width: 148, height: 148 });
   const edges = await popup.evaluate(`(() => {
     const img = document.querySelector('#qr-code img');
     const canvas = Object.assign(document.createElement('canvas'), { width: img.naturalWidth, height: img.naturalHeight });
@@ -65,7 +65,7 @@ async function generating(popup) {
     while (!dark(first)) first += 1;
     return { corner: dark(0), first };
   })()`);
-  check('the code sits inside a light margin of four modules', edges, { corner: false, first: 18 });
+  check('the code sits inside a light margin of four modules', edges, { corner: false, first: 16 });
   check('Download and Share appear', (await state(popup)).buttons, ['download-btn', 'share-btn']);
 
   const resized = await popup.evaluate(`(async () => {
@@ -74,7 +74,7 @@ async function generating(popup) {
     size.dispatchEvent(new Event('change'));
     return waitForImage();
   })()`);
-  check('changing the size redraws the code', resized, { width: 328, height: 328 });
+  check('changing the size redraws the code', resized, { width: 296, height: 296 });
 
   const large = await popup.evaluate(`(async () => {
     const size = document.getElementById('qr-size');
@@ -111,6 +111,24 @@ async function generating(popup) {
     return document.getElementById('qr-text').value;
   })()`);
   check('Current page URL fills in the active tab', url, POPUP);
+}
+
+// BarcodeDetector reads QR codes in Chrome on macOS but not on Linux, so CI checks the encoding in the unit tests only.
+async function unicode(popup) {
+  console.log('unicode');
+  await prepare(popup);
+  const canDecode = await popup.evaluate(`(async () => 'BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).includes('qr_code'))()`);
+  for (const text of ['3번 게이트에서 10시 30분에 만나요', 'Café 😀 🎉', 'https://example.com/?q=한글&x=1']) {
+    const drawn = !!(await generate(popup, text));
+    const decoded = canDecode
+      ? await popup.evaluate(`(async () => (await new BarcodeDetector({ formats: ['qr_code'] }).detect(document.querySelector('#qr-code img')))[0]?.rawValue)()`)
+      : text;
+    check(`draws and scans back ${JSON.stringify(text)}`, { drawn, decoded }, { drawn: true, decoded: text });
+  }
+  if (!canDecode) console.log('    (no BarcodeDetector here: drawn, not scanned)');
+
+  await popup.evaluate(`document.getElementById('qr-text').value = 'x'.repeat(5000); document.getElementById('generate-btn').click()`);
+  check('a text too long for a QR code says so', (await state(popup)).alerts, ['This text is too long for a QR code.']);
 }
 
 async function history(popup) {
@@ -187,6 +205,7 @@ const chrome = await launch();
 try {
   const popup = await chrome.open(POPUP);
   await generating(popup);
+  await unicode(popup);
   await history(popup);
   await theme(popup);
   await menus(chrome);

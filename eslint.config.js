@@ -14,12 +14,11 @@ const browser = {
   URLSearchParams: 'readonly',
   chrome: 'readonly',
   matchMedia: 'readonly',
-  // Set by the vendored qrcode.min.js, a classic script loaded before the modules.
-  QRCode: 'readonly',
+  TextEncoder: 'readonly',
 };
 
 export default [
-  { ignores: ['coverage/', 'dist/', 'node_modules/', 'src/**/*.min.js'] },
+  { ignores: ['coverage/', 'dist/', 'node_modules/', 'src/vendor/'] },
   js.configs.recommended,
   {
     files: ['src/**/*.js', 'tests/**/*.js', '*.config.js'],

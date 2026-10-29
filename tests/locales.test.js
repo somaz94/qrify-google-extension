@@ -15,8 +15,8 @@ const placeholders = (message) => (message.match(/\$[1-9]/g) ?? []).sort();
 function sources(dir) {
   return readdirSync(join(ROOT, dir)).flatMap((name) => {
     const path = join(dir, name);
-    if (statSync(join(ROOT, path)).isDirectory()) return sources(path);
-    return ['.js', '.html'].includes(extname(name)) && !name.endsWith('.min.js') ? [read(path)] : [];
+    if (statSync(join(ROOT, path)).isDirectory()) return name === 'vendor' ? [] : sources(path);
+    return ['.js', '.html'].includes(extname(name)) ? [read(path)] : [];
   });
 }
 

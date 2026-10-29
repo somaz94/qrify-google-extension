@@ -7,7 +7,8 @@ export default {
     // DOM and chrome API glue; covered by the end-to-end test instead.
     '!src/popup/**',
     '!src/background/**',
-    '!src/**/*.min.js',
+    // Third-party code, tested upstream.
+    '!src/vendor/**',
   ],
   coverageThreshold: {
     global: { statements: 90, branches: 90, functions: 90, lines: 90 },

@@ -56,6 +56,9 @@
   "errorEmptyText": {
     "message": "텍스트를 입력해 주세요."
   },
+  "errorTooLong": {
+    "message": "QR 코드에 담기에는 텍스트가 너무 깁니다."
+  },
   "shareTitle": {
     "message": "QR 코드"
   },

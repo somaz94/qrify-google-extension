@@ -1,7 +1,8 @@
 import { applyTranslations, t } from '../i18n.js';
 import { addEntry, loadHistory, newestFirst, saveHistory } from '../lib/history.js';
 import { queuedText } from '../lib/menus.js';
-import { qrOptions, quietZone } from '../lib/qr.js';
+import { encode, layout, paint } from '../lib/qr.js';
+import qrcode from '../vendor/qrcode.js';
 import { loadTheme, nextTheme, saveTheme, THEME_ICONS, THEME_TITLES } from '../lib/theme.js';
 
 const storage = chrome.storage.local;
@@ -21,24 +22,22 @@ function generateQRCode({ quiet = false } = {}) {
     return;
   }
 
-  qrCodeDiv.replaceChildren(drawCode(text));
+  const modules = encode(text, qrcode);
+  if (!modules) {
+    if (!quiet) alert(t('errorTooLong'));
+    return;
+  }
+  qrCodeDiv.replaceChildren(drawCode(text, modules));
   downloadBtn.classList.remove('hidden');
   shareBtn.classList.remove('hidden');
   remember(text);
 }
 
-// The vendored qrcodejs ignores a quietZone option, so its canvas is copied onto a larger one with the margin.
-function drawCode(text) {
-  const size = Number.parseInt(qrSize.value, 10);
-  const scratch = document.createElement('div');
-  const code = new QRCode(scratch, qrOptions({ text, size, dark: qrColor.value, light: bgColor.value }, QRCode.CorrectLevel));
-  const margin = quietZone(size, code._oQRCode.getModuleCount());
+function drawCode(text, modules) {
+  const box = layout(Number.parseInt(qrSize.value, 10), modules.length);
   const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size + 2 * margin;
-  const context = canvas.getContext('2d');
-  context.fillStyle = bgColor.value;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.drawImage(scratch.querySelector('canvas'), margin, margin);
+  canvas.width = canvas.height = box.total;
+  paint(canvas.getContext('2d'), modules, box, { dark: qrColor.value, light: bgColor.value });
 
   const img = document.createElement('img');
   img.src = canvas.toDataURL('image/png');
