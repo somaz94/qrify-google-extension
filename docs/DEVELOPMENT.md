@@ -31,11 +31,12 @@ Plain ES modules, loaded straight from `src/` with no bundler. Each directory ha
 |---|---|
 | `src/lib/` | Everything that can be tested without a browser: encoding text into modules and laying them out with the quiet zone (`qr.js`), the recent list (`history.js`), the theme (`theme.js`), and the right-click menus and the text they hand to the popup (`menus.js`) |
 | `src/vendor/` | Third-party code, unmodified: `qrcode.js` is `dist/qrcode.mjs` from the [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) npm package (MIT) |
+| `src/theme-early.js` | A classic script in the popup's `<head>` that paints the stored theme before the modules load; `src/lib/theme.js` is its tested copy |
 | `src/i18n.js` | `t()` and the helper that fills `data-i18n` attributes, over Chrome's `_locales` |
 | `src/popup/` | The popup page; DOM glue over `src/lib`. A right-click menu opens the same page in a tab as `popup.html?text=…` |
 | `src/background/` | The service worker: creates the right-click menus and opens the popup page for a click |
 
-`src/popup/` and `src/background/` are the only code outside the coverage gate, so logic belongs in `src/lib/`, where it is tested. Both are covered by the end-to-end test.
+`src/popup/`, `src/background/` and `src/theme-early.js` are the only code outside the coverage gate, so logic belongs in `src/lib/`, where it is tested. Both are covered by the end-to-end test.
 
 ### Encoding
 

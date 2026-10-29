@@ -8,11 +8,14 @@
   "commandOpen": {
     "message": "QR 코드 생성기 열기"
   },
-  "themeToDark": {
-    "message": "다크 모드로 전환"
+  "themeAuto": {
+    "message": "테마: 시스템 설정 따름 (누르면 밝게)"
   },
-  "themeToLight": {
-    "message": "라이트 모드로 전환"
+  "themeLight": {
+    "message": "테마: 밝게 (누르면 어둡게)"
+  },
+  "themeDark": {
+    "message": "테마: 어둡게 (누르면 시스템 설정 따름)"
   },
   "textPlaceholder": {
     "message": "텍스트나 URL을 입력하세요"

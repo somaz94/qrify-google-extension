@@ -3,7 +3,7 @@ import { addEntry, loadHistory, newestFirst, saveHistory } from '../lib/history.
 import { queuedText } from '../lib/menus.js';
 import { encode, layout, paint } from '../lib/qr.js';
 import qrcode from '../vendor/qrcode.js';
-import { loadTheme, nextTheme, saveTheme, THEME_ICONS, THEME_TITLES } from '../lib/theme.js';
+import { createThemer, migrateTheme, themeIcon, themeTitle } from '../lib/theme.js';
 
 const storage = chrome.storage.local;
 const qrText = document.getElementById('qr-text');
@@ -118,10 +118,10 @@ async function useCurrentTabUrl() {
   generateQRCode();
 }
 
-function showTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  themeToggle.textContent = THEME_ICONS[theme];
-  themeToggle.title = t(THEME_TITLES[theme]);
+function renderTheme(setting) {
+  themeToggle.textContent = themeIcon(setting);
+  themeToggle.title = t(themeTitle(setting));
+  themeToggle.setAttribute('aria-label', themeToggle.title);
 }
 
 document.getElementById('generate-btn').addEventListener('click', generateQRCode);
@@ -129,14 +129,12 @@ document.getElementById('current-url-btn').addEventListener('click', useCurrentT
 downloadBtn.addEventListener('click', downloadQRCode);
 shareBtn.addEventListener('click', shareQRCode);
 for (const control of [qrColor, bgColor, qrSize]) control.addEventListener('change', () => generateQRCode({ quiet: true }));
-themeToggle.addEventListener('click', () => {
-  const theme = nextTheme(document.documentElement.getAttribute('data-theme'));
-  showTheme(theme);
-  saveTheme(storage, theme);
-});
+themeToggle.addEventListener('click', () => renderTheme(themer.toggle()));
 
 applyTranslations();
-loadTheme(storage).then(showTheme);
+const themer = createThemer(document);
+renderTheme(themer.current());
+migrateTheme(storage).then((moved) => moved && renderTheme(themer.refresh()));
 loadHistory(storage).then((history) => {
   if (history.length) renderHistory(history);
 });

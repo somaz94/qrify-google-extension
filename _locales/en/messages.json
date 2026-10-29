@@ -8,11 +8,14 @@
   "commandOpen": {
     "message": "Open the QR code generator"
   },
-  "themeToDark": {
-    "message": "Switch to dark mode"
+  "themeAuto": {
+    "message": "Theme: follow the system (click for light)"
   },
-  "themeToLight": {
-    "message": "Switch to light mode"
+  "themeLight": {
+    "message": "Theme: light (click for dark)"
+  },
+  "themeDark": {
+    "message": "Theme: dark (click to follow the system)"
   },
   "textPlaceholder": {
     "message": "Enter text or a URL"

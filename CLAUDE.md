@@ -13,7 +13,7 @@
 ## Invariants
 
 - **The permissions stay `activeTab`, `contextMenus` and `storage`, and the extension makes no network requests.** A new permission re-prompts every existing user; `tests/manifest.test.js` pins the list. Open a page with `chrome.tabs.create`, which needs none
-- **Logic lives in `src/lib/`.** `src/popup/` and `src/background/` are glue over the DOM and the chrome APIs, outside the 90% coverage gate and covered by `make e2e` instead
+- **Logic lives in `src/lib/`.** `src/popup/`, `src/background/` and `src/theme-early.js` are glue over the DOM and the chrome APIs, outside the 90% coverage gate and covered by `make e2e` instead
 - **`src/vendor/` is third-party code, copied unmodified.** It is excluded from lint and coverage; change behavior around it in `src/lib/qr.js`
 - **Every user-visible string is a `_locales` key**, reached through `t()`, `data-i18n` or a menu's `title`; `tests/locales.test.js` enforces key and placeholder parity and that every key is used
 

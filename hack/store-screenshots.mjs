@@ -37,7 +37,8 @@ try {
         const setup = await browser.open(POPUP);
         await setup.evaluate(`(async () => {
           await chrome.storage.local.clear();
-          await chrome.storage.local.set(${JSON.stringify({ theme: shot.theme ?? 'light', qrHistory: shot.recent ?? [] })});
+          await chrome.storage.local.set(${JSON.stringify({ qrHistory: shot.recent ?? [] })});
+          localStorage.setItem('theme', ${JSON.stringify(shot.theme ?? 'light')});
         })()`);
         await setup.close();
 

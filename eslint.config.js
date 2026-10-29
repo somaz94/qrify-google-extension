@@ -15,6 +15,7 @@ const browser = {
   chrome: 'readonly',
   matchMedia: 'readonly',
   TextEncoder: 'readonly',
+  localStorage: 'readonly',
 };
 
 export default [
@@ -27,6 +28,10 @@ export default [
       semi: ['warn', 'always'],
       quotes: ['warn', 'single', { allowTemplateLiterals: true }],
     },
+  },
+  {
+    files: ['src/theme-early.js'],
+    languageOptions: { sourceType: 'script', globals: { localStorage: 'readonly', matchMedia: 'readonly', document: 'readonly' } },
   },
   {
     files: ['hack/**/*.mjs', 'tests/e2e/**/*.mjs'],

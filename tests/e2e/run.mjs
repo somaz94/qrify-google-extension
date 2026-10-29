@@ -44,7 +44,7 @@ const state = (popup) => popup.evaluate(`({
 })`);
 
 async function prepare(popup) {
-  await popup.evaluate(`chrome.storage.local.clear()`);
+  await popup.evaluate(`chrome.storage.local.clear(); localStorage.clear()`);
   await popup.reload();
   await popup.evaluate(CAPTURE_ALERTS + WAIT_FOR_IMAGE);
 }
@@ -196,18 +196,47 @@ const BUTTON_CONTRAST = `(() => {
   });
 })()`;
 
+// Headless Chrome follows the host's dark mode, so every check pins the system scheme first.
+const systemScheme = async (popup, scheme) => {
+  await popup.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }] });
+  await popup.evaluate(`new Promise((resolve) => setTimeout(resolve, 200))`);
+};
+const toggleTheme = (popup) => popup.evaluate(`(() => {
+  const toggle = document.getElementById('theme-toggle');
+  toggle.click();
+  return toggle.textContent;
+})()`);
+// The buttons fade to the new colors over 0.2 s.
+const settle = (popup) => popup.evaluate(`new Promise((resolve) => setTimeout(resolve, 300))`);
+
 async function theme(popup) {
   console.log('theme');
   await prepare(popup);
-  check('starts light', (await state(popup)).theme, 'light');
+  await systemScheme(popup, 'dark');
+  check('follows a dark system by default', [(await state(popup)).theme, await popup.evaluate(`document.getElementById('theme-toggle').textContent`)], ['dark', '🌓']);
+  await systemScheme(popup, 'light');
+  check('and repaints when the system turns light', (await state(popup)).theme, 'light');
+
+  await systemScheme(popup, 'dark');
+  check('the toggle picks light over a dark system', [await toggleTheme(popup), (await state(popup)).theme], ['☀️', 'light']);
+  await settle(popup);
   check('button text is readable in the light theme', await popup.evaluate(BUTTON_CONTRAST), []);
-  await popup.evaluate(`document.getElementById('theme-toggle').click()`);
-  check('the toggle switches to dark', (await state(popup)).theme, 'dark');
-  // The buttons fade to the new colors over 0.2 s.
-  await popup.evaluate(`new Promise((resolve) => setTimeout(resolve, 300))`);
+  check('then dark', [await toggleTheme(popup), (await state(popup)).theme], ['🌙', 'dark']);
+  await settle(popup);
   check('button text is readable in the dark theme', await popup.evaluate(BUTTON_CONTRAST), []);
   await popup.reload();
   check('dark survives reopening the popup', (await state(popup)).theme, 'dark');
+  check('then back to following the system', await toggleTheme(popup), '🌓');
+
+  await popup.evaluate(`(async () => { localStorage.clear(); await chrome.storage.local.set({ theme: 'light' }); })()`);
+  await popup.reload();
+  const migrated = await popup.evaluate(`(async () => ({
+    theme: document.documentElement.getAttribute('data-theme'),
+    stored: localStorage.getItem('theme'),
+    legacy: (await chrome.storage.local.get('theme')).theme ?? null,
+  }))()`);
+  check('a light theme picked in 1.1 carries over', migrated, { theme: 'light', stored: 'light', legacy: null });
+  await popup.send('Emulation.setEmulatedMedia', { features: [] });
 }
 
 async function korean(chrome) {

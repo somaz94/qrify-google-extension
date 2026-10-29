@@ -24,7 +24,7 @@ Make it yours
 
 Pick up where you left off
 - The last ten codes stay in a Recent list with their colors and size, one click from reopening
-- A light and a dark theme
+- A light and a dark theme, following the system unless you pick one
 - English and Korean, following the browser language
 
 Privacy
@@ -69,7 +69,7 @@ Generate QR codes from text the user types, the URL of the current tab, or the t
 |---|---|
 | `activeTab` | `The Current page URL button reads the address of the active tab, after the user opens the popup, to turn it into a QR code.` |
 | `contextMenus` | `Adds right-click entries that turn the selected text, a link or an image address into a QR code.` |
-| `storage` | `Keeps the user's recent codes and theme setting on this browser.` |
+| `storage` | `Keeps the user's recent codes on this browser.` |
 
 ### Remote code
 

@@ -7,6 +7,8 @@ export default {
     // DOM and chrome API glue; covered by the end-to-end test instead.
     '!src/popup/**',
     '!src/background/**',
+    // A classic script that runs before the modules; the logic it mirrors is src/lib/theme.js.
+    '!src/theme-early.js',
     // Third-party code, tested upstream.
     '!src/vendor/**',
   ],
