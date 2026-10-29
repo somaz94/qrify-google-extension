@@ -76,6 +76,26 @@ async function generating(popup) {
   })()`);
   check('changing the size redraws the code', resized, { width: 328, height: 328 });
 
+  const large = await popup.evaluate(`(async () => {
+    const size = document.getElementById('qr-size');
+    size.value = '512';
+    size.dispatchEvent(new Event('change'));
+    await waitForImage();
+    const img = document.querySelector('#qr-code img');
+    return { natural: img.naturalWidth > 512, fits: document.body.scrollWidth <= innerWidth && img.getBoundingClientRect().width <= innerWidth };
+  })()`);
+  check('a Large code keeps its pixels but fits the popup', large, { natural: true, fits: true });
+  const layout = await popup.evaluate(`(() => {
+    const color = document.getElementById('qr-color');
+    const style = getComputedStyle(color);
+    const swatch = color.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    const item = document.querySelector('.history-item');
+    const text = item.querySelector('.history-text').getBoundingClientRect();
+    const time = item.querySelector('.history-time').getBoundingClientRect();
+    return { swatch: swatch >= 16, apart: time.left - text.right >= 4, oneLine: Math.abs(text.top - time.top) < 2 };
+  })()`);
+  check('color swatches show and a recent entry keeps its text and time apart', layout, { swatch: true, apart: true, oneLine: true });
+
   check('a redraw does not add the same text again', (await state(popup)).history, ['https://example.com']);
 
   await popup.evaluate(`document.getElementById('qr-text').value = '   '; document.getElementById('generate-btn').click()`);

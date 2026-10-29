@@ -141,3 +141,61 @@ h1 {
 #share-btn:hover {
     background-color: #3367d6;
 }
+
+input[type="color"] {
+    width: 40px;
+    height: 28px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+/* A Large code is wider than the popup; it is scaled down here and downloads at full size. */
+#qr-code {
+    max-width: 100%;
+}
+
+#qr-code img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+}
+
+.history-section h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.history-item:hover {
+    background-color: var(--input-bg);
+    border-color: var(--button-bg);
+}
+
+.history-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-time {
+    flex-shrink: 0;
+    opacity: 0.7;
+}
