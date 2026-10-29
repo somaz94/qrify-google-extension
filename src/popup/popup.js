@@ -1,4 +1,5 @@
 import { applyTranslations, t } from '../i18n.js';
+import { debounce } from '../lib/debounce.js';
 import { addEntry, loadHistory, newestFirst, saveHistory } from '../lib/history.js';
 import { queuedText } from '../lib/menus.js';
 import { encode, layout, paint } from '../lib/qr.js';
@@ -16,9 +17,11 @@ const downloadBtn = document.getElementById('download-btn');
 const shareBtn = document.getElementById('share-btn');
 const themeToggle = document.getElementById('theme-toggle');
 
-function generateQRCode({ quiet = false } = {}) {
+/** Draws the code for the input; `save` also adds it to the recent list, `quiet` skips the alerts. */
+function generateQRCode({ quiet = false, save = true } = {}) {
   const text = qrText.value.trim();
   if (!text) {
+    clearCode();
     if (!quiet) alert(t('errorEmptyText'));
     return;
   }
@@ -31,8 +34,17 @@ function generateQRCode({ quiet = false } = {}) {
   qrCodeDiv.replaceChildren(drawCode(text, modules));
   downloadBtn.classList.remove('hidden');
   shareBtn.classList.remove('hidden');
-  remember(text);
+  if (save) remember(text);
 }
+
+function clearCode() {
+  qrCodeDiv.replaceChildren();
+  downloadBtn.classList.add('hidden');
+  shareBtn.classList.add('hidden');
+}
+
+// While typing, the code follows the input without filling the recent list; Enter or Generate saves it.
+const preview = debounce(() => generateQRCode({ quiet: true, save: false }), 300);
 
 function drawCode(text, modules) {
   const box = layout(Number.parseInt(qrSize.value, 10), modules.length);
@@ -90,6 +102,7 @@ async function shareQRCode() {
     alert(t('shareUnsupported'));
     return;
   }
+  remember(img.alt);
   try {
     const blob = await (await fetch(img.src)).blob();
     const file = new File([blob], 'qrcode.png', { type: 'image/png' });
@@ -105,6 +118,7 @@ async function shareQRCode() {
 function downloadQRCode() {
   const img = qrCodeDiv.querySelector('img');
   if (!img) return;
+  remember(img.alt);
   const link = document.createElement('a');
   link.download = 'qrify-code.png';
   link.href = img.src;
@@ -138,7 +152,16 @@ function renderTheme(setting) {
   themeToggle.setAttribute('aria-label', themeToggle.title);
 }
 
-document.getElementById('generate-btn').addEventListener('click', generateQRCode);
+document.getElementById('generate-btn').addEventListener('click', () => {
+  preview.cancel();
+  generateQRCode();
+});
+qrText.addEventListener('input', preview);
+qrText.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter' || event.isComposing) return;
+  preview.cancel();
+  generateQRCode();
+});
 document.getElementById('current-url-btn').addEventListener('click', useCurrentTabUrl);
 downloadBtn.addEventListener('click', downloadQRCode);
 shareBtn.addEventListener('click', shareQRCode);

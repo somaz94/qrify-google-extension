@@ -10,7 +10,7 @@ Every code is drawn in your browser. QRify makes no network requests and keeps n
 
 ## Features
 
-- **Any text or URL**, typed in or taken from the current page with **Current page URL**
+- **Any text or URL**, typed in or taken from the current page with **Current page URL**; the code follows as you type, and `Enter` adds it to the recent list
 - **Right-click menus** for selected text, a link or an image address; the code opens in a new tab
 - **Unicode**: Korean, emoji and any other text are encoded as UTF-8 and scan back exactly
 - **Colors and sizes**: pick the code and background colors and one of four sizes, kept for next time; the four-module margin scanners need is always drawn
@@ -43,7 +43,7 @@ git clone https://github.com/somaz94/qrify-google-extension.git
 
 1. Click the toolbar icon, or press `Ctrl+Shift+Q`
 2. Type text or a URL, or press **Current page URL**
-3. Press **Generate QR code**; changing a color or the size redraws it
+3. The code appears as you type; press `Enter` or **Generate QR code** to keep it in **Recent**. Changing a color or the size redraws it
 4. **Download** or **Share** the code, or pick an earlier one from **Recent**
 
 On any page, right-click selected text, a link or an image and pick the QRify entry to open its code in a new tab.

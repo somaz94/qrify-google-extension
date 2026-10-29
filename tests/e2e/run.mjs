@@ -114,6 +114,40 @@ async function generating(popup) {
 }
 
 // BarcodeDetector reads QR codes in Chrome on macOS but not on Linux, so CI checks the encoding in the unit tests only.
+async function typing(popup) {
+  console.log('typing');
+  await prepare(popup);
+  const previewed = await popup.evaluate(`(async () => {
+    const input = document.getElementById('qr-text');
+    input.value = 'typed';
+    input.dispatchEvent(new Event('input'));
+    const drawn = !!(await waitForImage(null));
+    return { drawn, listed: document.querySelectorAll('.history-item').length };
+  })()`);
+  check('a pause in typing draws the code without listing it', previewed, { drawn: true, listed: 0 });
+
+  const listed = await popup.evaluate(`(async () => {
+    const input = document.getElementById('qr-text');
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', isComposing: true, bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const whileComposing = document.querySelectorAll('.history-item').length;
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await waitForImage();
+    return { whileComposing, after: [...document.querySelectorAll('.history-text')].map((item) => item.textContent) };
+  })()`);
+  check('Enter lists it, but not while an IME is composing', listed, { whileComposing: 0, after: ['typed'] });
+
+  const cleared = await popup.evaluate(`(async () => {
+    const input = document.getElementById('qr-text');
+    input.value = '';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return { code: !!document.querySelector('#qr-code img'), buttons: !document.getElementById('download-btn').classList.contains('hidden') };
+  })()`);
+  check('emptying the input clears the code', cleared, { code: false, buttons: false });
+  check('previewing never alerts', (await state(popup)).alerts, []);
+}
+
 async function style(popup) {
   console.log('colors and size');
   await prepare(popup);
@@ -269,6 +303,7 @@ const chrome = await launch();
 try {
   const popup = await chrome.open(POPUP);
   await generating(popup);
+  await typing(popup);
   await style(popup);
   await unicode(popup);
   await history(popup);

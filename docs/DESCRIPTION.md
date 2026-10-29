@@ -12,7 +12,7 @@ The text pasted into the [Chrome Web Store Developer Dashboard](https://chrome.g
 QRify turns text or the page you are on into a QR code in one click, and draws it offline in your browser.
 
 Make a code
-- Type any text or URL, or take the current page's address with one button
+- Type any text or URL, or take the current page's address with one button; the code follows as you type
 - Right-click selected text, a link or an image and pick QRify to get its code without retyping
 - Korean, emoji and any other text are encoded as UTF-8, so phones scan them back exactly
 - Ctrl+Shift+Q (Cmd+Shift+Q on macOS) opens the popup
