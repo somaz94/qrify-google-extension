@@ -1,5 +1,6 @@
 import { applyTranslations, t } from '../i18n.js';
 import { addEntry, loadHistory, newestFirst, saveHistory } from '../lib/history.js';
+import { queuedText } from '../lib/menus.js';
 import { qrOptions } from '../lib/qr.js';
 import { loadTheme, nextTheme, saveTheme, THEME_ICONS, THEME_TITLES } from '../lib/theme.js';
 
@@ -121,3 +122,10 @@ loadTheme(storage).then(showTheme);
 loadHistory(storage).then((history) => {
   if (history.length) renderHistory(history);
 });
+
+// Set by a right-click menu, which opens this page in a tab.
+const queued = queuedText(location.search);
+if (queued) {
+  qrText.value = queued;
+  generateQRCode();
+}

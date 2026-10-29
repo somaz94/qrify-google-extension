@@ -91,6 +91,23 @@ async function history(popup) {
   check('clicking an entry brings its text back', restored, 'first');
 }
 
+async function menus(chrome) {
+  console.log('right-click menus');
+  const worker = await chrome.serviceWorker();
+  check('the manifest starts the service worker', worker.url, `${ORIGIN}/src/background/background.js`);
+  // update() rejects for an id that was never created, so this proves all three menus exist.
+  const created = await worker.evaluate(`Promise.all(['generateQR', 'generateQRFromImage', 'generateQRFromLink']
+    .map((id) => chrome.contextMenus.update(id, {}).then(() => id, () => null)))`);
+  check('the three menus are created', created, ['generateQR', 'generateQRFromImage', 'generateQRFromLink']);
+
+  const popup = await chrome.open(`${POPUP}?text=${encodeURIComponent('hello & "world"')}`);
+  await popup.evaluate(WAIT_FOR_IMAGE);
+  const opened = await popup.evaluate(`(async () => ({ text: document.getElementById('qr-text').value, image: !!(await waitForImage()) }))()`);
+  check('a menu click opens the page with its text drawn', opened, { text: 'hello & "world"', image: true });
+  check('no errors on the menu page', popup.problems(), []);
+  await popup.close();
+}
+
 async function theme(popup) {
   console.log('theme');
   await prepare(popup);
@@ -118,6 +135,7 @@ try {
   await generating(popup);
   await history(popup);
   await theme(popup);
+  await menus(chrome);
   console.log('errors');
   check('no uncaught exceptions or console errors', popup.problems(), []);
 } finally {

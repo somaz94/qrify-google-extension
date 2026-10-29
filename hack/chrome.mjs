@@ -89,6 +89,12 @@ export async function launch({ language = 'en', timeZone = 'UTC' } = {}) {
     ws.send(JSON.stringify({ id, method, params, sessionId }));
   });
 
+  const evaluator = (sessionId) => async (expression) => {
+    const { result, exceptionDetails } = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true }, sessionId);
+    if (exceptionDetails) throw new Error(exceptionDetails.exception?.description ?? exceptionDetails.text);
+    return result.value;
+  };
+
   /** Opens `url` in a new tab of `width` x `height` CSS pixels and waits for it to load. */
   async function open(url, { width = 552, height = 700, scale = 1 } = {}) {
     const { targetId } = await send('Target.createTarget', { url: 'about:blank' });
@@ -96,11 +102,7 @@ export async function launch({ language = 'en', timeZone = 'UTC' } = {}) {
     problems.set(sessionId, []);
     await send('Runtime.enable', {}, sessionId);
     await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: scale, mobile: false }, sessionId);
-    const evaluate = async (expression) => {
-      const { result, exceptionDetails } = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true }, sessionId);
-      if (exceptionDetails) throw new Error(exceptionDetails.exception?.description ?? exceptionDetails.text);
-      return result.value;
-    };
+    const evaluate = evaluator(sessionId);
     const ready = async () => {
       for (let i = 0; i < 100; i += 1) {
         try {
@@ -143,11 +145,26 @@ export async function launch({ language = 'en', timeZone = 'UTC' } = {}) {
     return targetInfos.filter((target) => target.type === 'page').map((target) => target.url);
   }
 
+  /** The extension's service worker, to evaluate in; waits for Chrome to start it. */
+  async function serviceWorker() {
+    for (let i = 0; i < 50; i += 1) {
+      const { targetInfos } = await send('Target.getTargets');
+      const target = targetInfos.find((info) => info.type === 'service_worker' && info.url.startsWith(ORIGIN));
+      if (target) {
+        const { sessionId } = await send('Target.attachToTarget', { targetId: target.targetId, flatten: true });
+        return { url: target.url, evaluate: evaluator(sessionId) };
+      }
+      await sleep(100);
+    }
+    throw new Error('The service worker did not start');
+  }
+
   // The extension is not reachable until Chrome has finished loading it.
   await sleep(1000);
   return {
     open,
     pageUrls,
+    serviceWorker,
     async close() {
       ws.close();
       chrome.kill();
