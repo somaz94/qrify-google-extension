@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; overflow: hidden; }
+  body {
+    font-family: system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+    background: linear-gradient(135deg, #0f1c33 0%, #13284a 45%, #1a3560 100%);
+    color: #fff; position: relative; width: 1280px; height: 800px;
+  }
+  .copy { position: absolute; left: 96px; top: 50%; transform: translateY(-50%); width: 500px; }
+  h1 { margin: 0 0 22px; font-size: 48px; line-height: 1.16; letter-spacing: -0.02em; font-weight: 800; word-break: keep-all; }
+  h1 em { font-style: normal; color: #6fb1ff; }
+  p { margin: 0; font-size: 20px; line-height: 1.62; color: #b9c6d8; word-break: keep-all; }
+  .shot { position: absolute; right: 150px; top: 50%; transform: translateY(-50%); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); border-radius: 12px; overflow: hidden; }
+  .shot img { display: block; max-height: 700px; max-width: 520px; }
+
+  body.promo { width: 440px; height: 280px; }
+  .promo .tile { position: absolute; inset: 0; display: flex; align-items: center; gap: 28px; padding: 0 36px; }
+  .promo .tile img { width: 104px; height: 104px; }
+  .promo .tile b { display: block; font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+  .promo .tile span { display: block; font-size: 15px; line-height: 1.5; color: #b9c6d8; word-break: keep-all; }
+</style>
+<body>
+<script>
+// One template for every language; the popup captures (popup-<n>.png) and icon.png sit next to this file.
+const COPY = {
+  en: {
+    slides: [
+      { title: 'A QR code for <em>any link</em>', body: 'Type text or take the current page\'s URL, and the code is ready to scan, download or share.' },
+      { title: 'Your colors, <em>four sizes</em>', body: 'Pick the code and background colors and a size. The margin scanners need is always drawn.' },
+      { title: 'Straight from a <em>right-click</em>', body: 'Turn selected text, a link or an image address into a QR code without retyping it.' },
+      { title: 'Recent codes, <em>light or dark</em>', body: 'The last ten codes are one click away, with their colors and size. Nothing leaves your browser.' },
+    ],
+    promo: 'QR codes for links and text.<br>Colors, sizes, offline.',
+  },
+  ko: {
+    slides: [
+      { title: '<em>어떤 링크든</em> QR 코드로', body: '텍스트를 입력하거나 지금 보는 페이지의 URL을 가져오면, 바로 스캔하고 내려받고 공유할 수 있는 코드가 됩니다.' },
+      { title: '원하는 색, <em>네 가지 크기</em>', body: '코드 색과 배경색, 크기를 고릅니다. 스캐너가 읽는 데 필요한 여백은 항상 함께 그립니다.' },
+      { title: '<em>우클릭</em> 한 번으로', body: '선택한 텍스트, 링크, 이미지 주소를 다시 입력하지 않고 바로 QR 코드로 만듭니다.' },
+      { title: '최근 코드, <em>밝게 또는 어둡게</em>', body: '최근 코드 10개를 색과 크기 그대로 한 번에 다시 엽니다. 어떤 데이터도 브라우저 밖으로 나가지 않습니다.' },
+    ],
+  },
+};
+
+const params = new URLSearchParams(location.search);
+const lang = params.get('lang') ?? 'en';
+const copy = COPY[lang];
+document.documentElement.lang = lang;
+if (params.has('promo')) {
+  document.body.className = 'promo';
+  document.body.insertAdjacentHTML('beforeend', `<div class="tile"><img src="icon.png" alt=""><div><b>QRify</b><span>${copy.promo}</span></div></div>`);
+} else {
+  const n = Number(params.get('n') ?? 0);
+  document.body.insertAdjacentHTML('beforeend', `<div class="copy"><h1>${copy.slides[n].title}</h1><p>${copy.slides[n].body}</p></div>
+    <div class="shot"><img src="popup-${n + 1}.png" alt=""></div>`);
+}
+</script>
+</body>
+</html>

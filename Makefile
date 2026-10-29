@@ -1,4 +1,4 @@
-.PHONY: help install test test-cover e2e lint lint-fix package version bump-version clean
+.PHONY: help install test test-cover e2e lint lint-fix package store-screenshots version bump-version clean
 
 PACKAGE := dist/qrify.zip
 
@@ -29,6 +29,9 @@ package: clean ## Package the extension into a ZIP for the Chrome Web Store
 	@echo ""
 	@echo "  ✓ $(PACKAGE) created"
 	@ls -lh $(PACKAGE)
+
+store-screenshots: ## Redraw the Chrome Web Store images in store/ (Chrome for Testing)
+	node hack/store-screenshots.mjs
 
 clean: ## Remove build artifacts
 	rm -rf dist/
