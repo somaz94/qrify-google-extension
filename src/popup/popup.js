@@ -3,6 +3,7 @@ import { debounce } from '../lib/debounce.js';
 import { addEntry, loadHistory, newestFirst, removeEntry, saveHistory } from '../lib/history.js';
 import { queuedText } from '../lib/menus.js';
 import { encode, layout, paint } from '../lib/qr.js';
+import { canShareImage } from '../lib/share.js';
 import { loadStyle, saveStyle, validStyle } from '../lib/style.js';
 import qrcode from '../vendor/qrcode.js';
 import { createThemer, migrateTheme, themeIcon, themeTitle } from '../lib/theme.js';
@@ -35,7 +36,7 @@ function generateQRCode({ quiet = false, save = true } = {}) {
   say(null);
   qrCodeDiv.replaceChildren(drawCode(text, modules));
   downloadBtn.classList.remove('hidden');
-  shareBtn.classList.remove('hidden');
+  shareBtn.classList.toggle('hidden', !canShareImage());
   if (save) remember(text);
 }
 
@@ -124,10 +125,7 @@ function element(tag, className) {
 
 async function shareQRCode() {
   const img = qrCodeDiv.querySelector('img');
-  if (!img || !navigator.share) {
-    say('shareUnsupported');
-    return;
-  }
+  if (!img) return;
   remember(img.alt);
   try {
     const blob = await (await fetch(img.src)).blob();

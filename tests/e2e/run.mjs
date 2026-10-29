@@ -67,7 +67,18 @@ async function generating(popup) {
     return { corner: dark(0), first };
   })()`);
   check('the code sits inside a light margin of four modules', edges, { corner: false, first: 16 });
-  check('Download and Share appear', (await state(popup)).buttons, ['download-btn', 'share-btn']);
+  const shareable = await popup.evaluate(`!!navigator.canShare?.({ files: [new File([], 'qrcode.png', { type: 'image/png' })] })`);
+  check('Download appears, and Share where the browser can share files', (await state(popup)).buttons, shareable ? ['download-btn', 'share-btn'] : ['download-btn']);
+  const hidden = await popup.evaluate(`(async () => {
+    const real = navigator.canShare;
+    navigator.canShare = () => false;
+    const list = document.querySelector('.history-section');
+    document.getElementById('generate-btn').click();
+    await waitForImage(list);
+    navigator.canShare = real;
+    return document.getElementById('share-btn').classList.contains('hidden');
+  })()`);
+  check('Share stays hidden where files cannot be shared', hidden, true);
 
   const resized = await popup.evaluate(`(async () => {
     const size = document.getElementById('qr-size');

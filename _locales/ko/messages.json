@@ -77,9 +77,6 @@
   "shareFailed": {
     "message": "QR 코드를 공유하지 못했습니다."
   },
-  "shareUnsupported": {
-    "message": "이 브라우저는 파일 공유를 지원하지 않습니다."
-  },
   "menuSelection": {
     "message": "선택한 텍스트로 QR 코드 생성"
   },
