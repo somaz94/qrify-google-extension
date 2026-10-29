@@ -17,15 +17,20 @@ const CAPTURE_ALERTS = `window.alerts = []; window.alert = (message) => window.a
 
 /** Types `text`, clicks Generate and waits for the image the QR library draws from its canvas. */
 const generate = (popup, text) => popup.evaluate(`(async () => {
+  const list = document.querySelector('.history-section');
   document.getElementById('qr-text').value = ${JSON.stringify(text)};
   document.getElementById('generate-btn').click();
-  return waitForImage();
+  return waitForImage(list);
 })()`);
 
-const WAIT_FOR_IMAGE = `window.waitForImage = async () => {
+// Generating saves to the history before it redraws the list, so a check waits for the new list too.
+const WAIT_FOR_IMAGE = `window.waitForImage = async (previousList = document.querySelector('.history-section')) => {
+  for (let i = 0; i < 50 && document.querySelector('.history-section') === previousList; i += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
   for (let i = 0; i < 50; i += 1) {
     const img = document.querySelector('#qr-code img');
-    if (img?.src.startsWith('data:image/png')) return { width: img.naturalWidth, height: img.naturalHeight };
+    if (img?.src.startsWith('data:image/png') && img.complete && img.naturalWidth) return { width: img.naturalWidth, height: img.naturalHeight };
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
   return null;
@@ -48,7 +53,19 @@ async function generating(popup) {
   console.log('generating');
   await prepare(popup);
   check('nothing to download before a code exists', (await state(popup)).buttons, []);
-  check('Generate draws a 128 px code by default', await generate(popup, 'https://example.com'), { width: 128, height: 128 });
+  // 'https://example.com' at the highest error correction is version 3, 29 modules: 128 px plus 2 x 18 px.
+  check('Generate draws a 128 px code with its margin', await generate(popup, 'https://example.com'), { width: 164, height: 164 });
+  const edges = await popup.evaluate(`(() => {
+    const img = document.querySelector('#qr-code img');
+    const canvas = Object.assign(document.createElement('canvas'), { width: img.naturalWidth, height: img.naturalHeight });
+    const context = canvas.getContext('2d');
+    context.drawImage(img, 0, 0);
+    const dark = (x) => context.getImageData(x, x, 1, 1).data[0] < 128;
+    let first = 0;
+    while (!dark(first)) first += 1;
+    return { corner: dark(0), first };
+  })()`);
+  check('the code sits inside a light margin of four modules', edges, { corner: false, first: 18 });
   check('Download and Share appear', (await state(popup)).buttons, ['download-btn', 'share-btn']);
 
   const resized = await popup.evaluate(`(async () => {
@@ -57,7 +74,7 @@ async function generating(popup) {
     size.dispatchEvent(new Event('change'));
     return waitForImage();
   })()`);
-  check('changing the size redraws the code', resized, { width: 256, height: 256 });
+  check('changing the size redraws the code', resized, { width: 328, height: 328 });
 
   check('a redraw does not add the same text again', (await state(popup)).history, ['https://example.com']);
 
@@ -119,7 +136,7 @@ async function menus(chrome) {
 
   const popup = await chrome.open(`${POPUP}?text=${encodeURIComponent('hello & "world"')}`);
   await popup.evaluate(WAIT_FOR_IMAGE);
-  const opened = await popup.evaluate(`(async () => ({ text: document.getElementById('qr-text').value, image: !!(await waitForImage()) }))()`);
+  const opened = await popup.evaluate(`(async () => ({ text: document.getElementById('qr-text').value, image: !!(await waitForImage(null)) }))()`);
   check('a menu click opens the page with its text drawn', opened, { text: 'hello & "world"', image: true });
   check('no errors on the menu page', popup.problems(), []);
   await popup.close();

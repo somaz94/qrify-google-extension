@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals';
-import { qrOptions } from '../src/lib/qr.js';
+import { qrOptions, QUIET_MODULES, quietZone } from '../src/lib/qr.js';
 
 describe('qrOptions', () => {
   test('makes a square code at the picked size, colors and the highest error correction', () => {
@@ -12,5 +12,13 @@ describe('qrOptions', () => {
       colorLight: '#ffffff',
       correctLevel: 2,
     });
+  });
+});
+
+describe('quietZone', () => {
+  test('is four modules wide, rounded up to whole pixels', () => {
+    expect(QUIET_MODULES).toBe(4);
+    expect(quietZone(128, 29)).toBe(18);
+    expect(quietZone(256, 32)).toBe(32);
   });
 });
