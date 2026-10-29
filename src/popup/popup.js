@@ -2,6 +2,7 @@ import { applyTranslations, t } from '../i18n.js';
 import { addEntry, loadHistory, newestFirst, saveHistory } from '../lib/history.js';
 import { queuedText } from '../lib/menus.js';
 import { encode, layout, paint } from '../lib/qr.js';
+import { loadStyle, saveStyle, validStyle } from '../lib/style.js';
 import qrcode from '../vendor/qrcode.js';
 import { createThemer, migrateTheme, themeIcon, themeTitle } from '../lib/theme.js';
 
@@ -68,10 +69,8 @@ function renderHistory(history) {
     item.append(text, time);
     item.addEventListener('click', () => {
       qrText.value = entry.text;
-      qrColor.value = entry.qrColor;
-      bgColor.value = entry.bgColor;
-      qrSize.value = entry.size;
-      generateQRCode();
+      showStyle(validStyle(entry));
+      restyle();
     });
     list.append(item);
   }
@@ -118,6 +117,21 @@ async function useCurrentTabUrl() {
   generateQRCode();
 }
 
+function currentStyle() {
+  return { qrColor: qrColor.value, bgColor: bgColor.value, size: qrSize.value };
+}
+
+function showStyle(style) {
+  qrColor.value = style.qrColor;
+  bgColor.value = style.bgColor;
+  qrSize.value = style.size;
+}
+
+function restyle() {
+  saveStyle(storage, currentStyle());
+  generateQRCode({ quiet: true });
+}
+
 function renderTheme(setting) {
   themeToggle.textContent = themeIcon(setting);
   themeToggle.title = t(themeTitle(setting));
@@ -128,20 +142,25 @@ document.getElementById('generate-btn').addEventListener('click', generateQRCode
 document.getElementById('current-url-btn').addEventListener('click', useCurrentTabUrl);
 downloadBtn.addEventListener('click', downloadQRCode);
 shareBtn.addEventListener('click', shareQRCode);
-for (const control of [qrColor, bgColor, qrSize]) control.addEventListener('change', () => generateQRCode({ quiet: true }));
+for (const control of [qrColor, bgColor, qrSize]) control.addEventListener('change', restyle);
 themeToggle.addEventListener('click', () => renderTheme(themer.toggle()));
 
 applyTranslations();
 const themer = createThemer(document);
 renderTheme(themer.current());
 migrateTheme(storage).then((moved) => moved && renderTheme(themer.refresh()));
-loadHistory(storage).then((history) => {
-  if (history.length) renderHistory(history);
-});
 
-// Set by a right-click menu, which opens this page in a tab.
-const queued = queuedText(location.search);
-if (queued) {
-  qrText.value = queued;
-  generateQRCode();
+async function start() {
+  showStyle(await loadStyle(storage));
+  const history = await loadHistory(storage);
+  if (history.length) renderHistory(history);
+
+  // Set by a right-click menu, which opens this page in a tab.
+  const queued = queuedText(location.search);
+  if (queued) {
+    qrText.value = queued;
+    generateQRCode();
+  }
 }
+
+start();

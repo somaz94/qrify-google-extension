@@ -13,7 +13,7 @@ Every code is drawn in your browser. QRify makes no network requests and keeps n
 - **Any text or URL**, typed in or taken from the current page with **Current page URL**
 - **Right-click menus** for selected text, a link or an image address; the code opens in a new tab
 - **Unicode**: Korean, emoji and any other text are encoded as UTF-8 and scan back exactly
-- **Colors and sizes**: pick the code and background colors and one of four sizes; the four-module margin scanners need is always drawn
+- **Colors and sizes**: pick the code and background colors and one of four sizes, kept for next time; the four-module margin scanners need is always drawn
 - **Download** the code as a PNG, or **Share** it through the system share sheet
 - **Recent** list of your last codes with their colors and size, one click from reopening
 - A light and a dark theme that follow the system unless you pick one, and **English and Korean**, following the browser language
@@ -56,7 +56,7 @@ On any page, right-click selected text, a link or an image and pick the QRify en
 |---|---|
 | `activeTab` | **Current page URL** reads the address of the tab you are on |
 | `contextMenus` | The right-click entries |
-| `storage` | The recent list |
+| `storage` | The recent list and the last colors and size |
 
 <br/>
 

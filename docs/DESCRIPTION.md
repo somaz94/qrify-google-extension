@@ -18,7 +18,7 @@ Make a code
 - Ctrl+Shift+Q (Cmd+Shift+Q on macOS) opens the popup
 
 Make it yours
-- Pick the code and background colors and one of four sizes
+- Pick the code and background colors and one of four sizes; the popup reopens on the ones you used last
 - The light margin scanners need is always drawn around the code
 - Download the code as a PNG, or share it through your system's share sheet
 
@@ -69,7 +69,7 @@ Generate QR codes from text the user types, the URL of the current tab, or the t
 |---|---|
 | `activeTab` | `The Current page URL button reads the address of the active tab, after the user opens the popup, to turn it into a QR code.` |
 | `contextMenus` | `Adds right-click entries that turn the selected text, a link or an image address into a QR code.` |
-| `storage` | `Keeps the user's recent codes on this browser.` |
+| `storage` | `Keeps the user's recent codes and last picked colors and size on this browser.` |
 
 ### Remote code
 

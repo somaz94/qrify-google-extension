@@ -114,6 +114,21 @@ async function generating(popup) {
 }
 
 // BarcodeDetector reads QR codes in Chrome on macOS but not on Linux, so CI checks the encoding in the unit tests only.
+async function style(popup) {
+  console.log('colors and size');
+  await prepare(popup);
+  check('a first run starts black on white at Small', await popup.evaluate(`[document.getElementById('qr-color').value, document.getElementById('bg-color').value, document.getElementById('qr-size').value]`), ['#000000', '#ffffff', '128']);
+  await popup.evaluate(`(() => {
+    for (const [id, value] of [['qr-color', '#1a237e'], ['bg-color', '#fff8e1'], ['qr-size', '256']]) {
+      const control = document.getElementById(id);
+      control.value = value;
+      control.dispatchEvent(new Event('change'));
+    }
+  })()`);
+  await popup.reload();
+  check('the popup reopens on the colors and size picked last', await popup.evaluate(`[document.getElementById('qr-color').value, document.getElementById('bg-color').value, document.getElementById('qr-size').value]`), ['#1a237e', '#fff8e1', '256']);
+}
+
 async function unicode(popup) {
   console.log('unicode');
   await prepare(popup);
@@ -254,6 +269,7 @@ const chrome = await launch();
 try {
   const popup = await chrome.open(POPUP);
   await generating(popup);
+  await style(popup);
   await unicode(popup);
   await history(popup);
   await theme(popup);
