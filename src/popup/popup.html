@@ -18,24 +18,20 @@
             <p id="message" class="message" role="status" hidden></p>
         </div>
         <div class="style-section">
-            <div class="color-picker">
-                <label><span data-i18n="qrColor"></span>
-                    <input type="color" id="qr-color" value="#000000">
-                </label>
-                <label><span data-i18n="bgColor"></span>
-                    <input type="color" id="bg-color" value="#ffffff">
-                </label>
-            </div>
-            <div class="size-picker">
-                <label><span data-i18n="size"></span>
-                    <select id="qr-size">
-                        <option value="64" data-i18n="sizeExtraSmall"></option>
-                        <option value="128" selected data-i18n="sizeSmall"></option>
-                        <option value="256" data-i18n="sizeMedium"></option>
-                        <option value="512" data-i18n="sizeLarge"></option>
-                    </select>
-                </label>
-            </div>
+            <label class="field"><span data-i18n="qrColor"></span>
+                <input type="color" id="qr-color" value="#000000">
+            </label>
+            <label class="field"><span data-i18n="bgColor"></span>
+                <input type="color" id="bg-color" value="#ffffff">
+            </label>
+            <label class="field size-field"><span data-i18n="size"></span>
+                <select id="qr-size">
+                    <option value="64" data-i18n="sizeExtraSmall"></option>
+                    <option value="128" selected data-i18n="sizeSmall"></option>
+                    <option value="256" data-i18n="sizeMedium"></option>
+                    <option value="512" data-i18n="sizeLarge"></option>
+                </select>
+            </label>
         </div>
         <div class="qr-section">
             <div id="qr-code"></div>

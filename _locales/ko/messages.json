@@ -27,13 +27,13 @@
     "message": "현재 페이지 URL"
   },
   "qrColor": {
-    "message": "QR 색상:"
+    "message": "QR 색상"
   },
   "bgColor": {
-    "message": "배경 색상:"
+    "message": "배경 색상"
   },
   "size": {
-    "message": "크기:"
+    "message": "크기"
   },
   "sizeExtraSmall": {
     "message": "더 작게"

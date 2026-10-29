@@ -27,13 +27,13 @@
     "message": "Current page URL"
   },
   "qrColor": {
-    "message": "QR color:"
+    "message": "QR color"
   },
   "bgColor": {
-    "message": "Background:"
+    "message": "Background"
   },
   "size": {
-    "message": "Size:"
+    "message": "Size"
   },
   "sizeExtraSmall": {
     "message": "Extra small"

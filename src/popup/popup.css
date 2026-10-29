@@ -43,7 +43,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
 }
 
 .theme-toggle {
@@ -85,8 +84,34 @@ button:hover {
 }
 
 .style-section {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 12px;
+    padding: 12px;
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.field span {
+    opacity: 0.75;
+}
+
+select {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .container {
@@ -127,27 +152,15 @@ h1 {
     display: none;
 }
 
-.color-picker {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.color-picker label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.size-picker {
-    margin-top: 10px;
-}
-
 .button-group {
     display: flex;
     gap: 8px;
     justify-content: center;
-    margin-top: 10px;
+}
+
+/* Nothing to show until there is a code, and an empty section would still take its gap. */
+.qr-section:has(#qr-code:empty) {
+    display: none;
 }
 
 #share-btn {
@@ -159,9 +172,10 @@ h1 {
 }
 
 input[type="color"] {
-    width: 40px;
-    height: 28px;
+    width: 56px;
+    height: 32px;
     padding: 2px;
+    background-color: var(--bg-color);
     cursor: pointer;
 }
 
