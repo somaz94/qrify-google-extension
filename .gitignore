@@ -11,6 +11,12 @@ Thumbs.db
 # Logs
 *.log
 
+# Node
+node_modules/
+
+# Test coverage
+coverage/
+
 # Build output
 dist/
 build/

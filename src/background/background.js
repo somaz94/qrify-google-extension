@@ -6,32 +6,24 @@ chrome.runtime.onInstalled.addListener(() => {
 // Optional: Add context menu for right-click QR code generation
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: "generateQR",
-    title: chrome.i18n.getMessage("menuSelection"),
-    contexts: ["selection"]
+    id: 'generateQR',
+    title: chrome.i18n.getMessage('menuSelection'),
+    contexts: ['selection']
   });
 
   // 이미지용 메뉴
   chrome.contextMenus.create({
-    id: "generateQRFromImage",
-    title: chrome.i18n.getMessage("menuImage"),
-    contexts: ["image"]
+    id: 'generateQRFromImage',
+    title: chrome.i18n.getMessage('menuImage'),
+    contexts: ['image']
   });
 
   // 링크용 메뉴
   chrome.contextMenus.create({
-    id: "generateQRFromLink",
-    title: chrome.i18n.getMessage("menuLink"),
-    contexts: ["link"]
+    id: 'generateQRFromLink',
+    title: chrome.i18n.getMessage('menuLink'),
+    contexts: ['link']
   });
-});
-
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "generateQR") {
-    // Handle selected text
-    const selectedText = info.selectionText;
-    // You can implement additional functionality here
-  }
 });
 
 chrome.storage.local.get(['qrHistory'], function(result) {

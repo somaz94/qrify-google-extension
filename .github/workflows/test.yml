@@ -1,4 +1,4 @@
-name: Test
+name: Test & Lint
 
 on:
   push:
@@ -23,9 +23,16 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
+          cache: npm
 
-      - name: Test
-        run: make test
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test with coverage
+        run: npm run test:coverage
 
       - name: Package
         run: make package

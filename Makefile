@@ -1,12 +1,24 @@
-.PHONY: help test package version bump-version clean
+.PHONY: help install test test-cover lint lint-fix package version bump-version clean
 
 PACKAGE := dist/qrify.zip
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-test: ## Run the tests with Node's built-in runner
-	node --test 'tests/*.test.mjs'
+install: ## Install dev dependencies (jest, eslint)
+	npm install --registry https://registry.npmjs.org
+
+test: ## Run unit tests
+	npm test
+
+test-cover: ## Run tests with coverage (fails under 90%)
+	npm run test:coverage
+
+lint: ## Run ESLint
+	npm run lint
+
+lint-fix: ## Run ESLint with auto-fix
+	npm run lint:fix
 
 package: clean ## Package the extension into a ZIP for the Chrome Web Store
 	@mkdir -p dist
