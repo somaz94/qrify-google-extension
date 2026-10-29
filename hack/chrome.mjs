@@ -89,8 +89,9 @@ export async function launch({ language = 'en', timeZone = 'UTC' } = {}) {
     ws.send(JSON.stringify({ id, method, params, sessionId }));
   });
 
-  const evaluator = (sessionId) => async (expression) => {
-    const { result, exceptionDetails } = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true }, sessionId);
+  /** `userGesture` runs the expression as if the user had just clicked, which APIs such as the clipboard require. */
+  const evaluator = (sessionId) => async (expression, { userGesture = false } = {}) => {
+    const { result, exceptionDetails } = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true, userGesture }, sessionId);
     if (exceptionDetails) throw new Error(exceptionDetails.exception?.description ?? exceptionDetails.text);
     return result.value;
   };
@@ -165,6 +166,8 @@ export async function launch({ language = 'en', timeZone = 'UTC' } = {}) {
     open,
     pageUrls,
     serviceWorker,
+    /** Grants the extension browser permissions such as `clipboardReadWrite`, so a test can read what it wrote. */
+    grant: (permissions) => send('Browser.grantPermissions', { origin: ORIGIN, permissions }),
     async close() {
       ws.close();
       chrome.kill();

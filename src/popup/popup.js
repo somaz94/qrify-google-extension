@@ -16,6 +16,7 @@ const bgColor = document.getElementById('bg-color');
 const qrSize = document.getElementById('qr-size');
 const downloadBtn = document.getElementById('download-btn');
 const shareBtn = document.getElementById('share-btn');
+const copyBtn = document.getElementById('copy-btn');
 const themeToggle = document.getElementById('theme-toggle');
 const message = document.getElementById('message');
 
@@ -36,6 +37,7 @@ function generateQRCode({ quiet = false, save = true } = {}) {
   say(null);
   qrCodeDiv.replaceChildren(drawCode(text, modules));
   downloadBtn.classList.remove('hidden');
+  copyBtn.classList.remove('hidden');
   shareBtn.classList.toggle('hidden', !canShareImage());
   if (save) remember(text);
 }
@@ -49,6 +51,7 @@ function say(key) {
 function clearCode() {
   qrCodeDiv.replaceChildren();
   downloadBtn.classList.add('hidden');
+  copyBtn.classList.add('hidden');
   shareBtn.classList.add('hidden');
 }
 
@@ -139,6 +142,20 @@ async function shareQRCode() {
   }
 }
 
+async function copyQRCode() {
+  const img = qrCodeDiv.querySelector('img');
+  if (!img) return;
+  remember(img.alt);
+  try {
+    const blob = await (await fetch(img.src)).blob();
+    await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+    copyBtn.textContent = t('copied');
+    setTimeout(() => { copyBtn.textContent = t('copy'); }, 1500);
+  } catch {
+    say('copyFailed');
+  }
+}
+
 function downloadQRCode() {
   const img = qrCodeDiv.querySelector('img');
   if (!img) return;
@@ -191,6 +208,7 @@ qrText.addEventListener('keydown', (event) => {
 });
 document.getElementById('current-url-btn').addEventListener('click', useCurrentTabUrl);
 downloadBtn.addEventListener('click', downloadQRCode);
+copyBtn.addEventListener('click', copyQRCode);
 shareBtn.addEventListener('click', shareQRCode);
 for (const control of [qrColor, bgColor, qrSize]) control.addEventListener('change', restyle);
 themeToggle.addEventListener('click', () => renderTheme(themer.toggle()));

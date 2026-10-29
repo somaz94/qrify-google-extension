@@ -20,7 +20,7 @@ Make a code
 Make it yours
 - Pick the code and background colors and one of four sizes; the popup reopens on the ones you used last
 - The light margin scanners need is always drawn around the code
-- Download the code as a PNG, or share it through your system's share sheet where Chrome supports it
+- Download the code as a PNG, copy it to paste into a document or chat, or share it through your system's share sheet where Chrome supports it
 
 Pick up where you left off
 - The last ten codes stay in a Recent list with their colors and size, one click from reopening, and you can remove any of them

@@ -50,6 +50,15 @@
   "download": {
     "message": "Download"
   },
+  "copy": {
+    "message": "Copy"
+  },
+  "copied": {
+    "message": "Copied"
+  },
+  "copyFailed": {
+    "message": "Could not copy the QR code."
+  },
   "share": {
     "message": "Share"
   },

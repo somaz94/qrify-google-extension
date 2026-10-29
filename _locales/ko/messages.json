@@ -50,6 +50,15 @@
   "download": {
     "message": "다운로드"
   },
+  "copy": {
+    "message": "복사"
+  },
+  "copied": {
+    "message": "복사됨"
+  },
+  "copyFailed": {
+    "message": "QR 코드를 복사하지 못했습니다."
+  },
   "share": {
     "message": "공유하기"
   },

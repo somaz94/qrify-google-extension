@@ -36,8 +36,11 @@ const WAIT_FOR_IMAGE = `window.waitForImage = async (previousList = document.que
   return null;
 };`;
 
+// The popup is narrow, so a new button can wrap the row; Korean labels are the longest.
+const ONE_LINE = `new Set([...document.querySelectorAll('.button-group button:not(.hidden)')].map((button) => Math.round(button.getBoundingClientRect().top))).size === 1`;
+
 const state = (popup) => popup.evaluate(`({
-  buttons: ['download-btn', 'share-btn'].filter((id) => !document.getElementById(id).classList.contains('hidden')),
+  buttons: ['download-btn', 'copy-btn', 'share-btn'].filter((id) => !document.getElementById(id).classList.contains('hidden')),
   history: [...document.querySelectorAll('.history-item .history-text')].map((item) => item.textContent),
   theme: document.documentElement.getAttribute('data-theme'),
   alerts: window.alerts,
@@ -68,7 +71,7 @@ async function generating(popup) {
   })()`);
   check('the code sits inside a light margin of four modules', edges, { corner: false, first: 16 });
   const shareable = await popup.evaluate(`!!navigator.canShare?.({ files: [new File([], 'qrcode.png', { type: 'image/png' })] })`);
-  check('Download appears, and Share where the browser can share files', (await state(popup)).buttons, shareable ? ['download-btn', 'share-btn'] : ['download-btn']);
+  check('Download and Copy appear, and Share where the browser can share files', (await state(popup)).buttons, shareable ? ['download-btn', 'copy-btn', 'share-btn'] : ['download-btn', 'copy-btn']);
   const hidden = await popup.evaluate(`(async () => {
     const real = navigator.canShare;
     navigator.canShare = () => false;
@@ -79,6 +82,8 @@ async function generating(popup) {
     return document.getElementById('share-btn').classList.contains('hidden');
   })()`);
   check('Share stays hidden where files cannot be shared', hidden, true);
+  await generate(popup, 'https://example.com');
+  check('the code buttons fit on one line', await popup.evaluate(ONE_LINE), true);
 
   const resized = await popup.evaluate(`(async () => {
     const size = document.getElementById('qr-size');
@@ -128,6 +133,31 @@ async function generating(popup) {
 }
 
 // BarcodeDetector reads QR codes in Chrome on macOS but not on Linux, so CI checks the encoding in the unit tests only.
+async function copying(chrome, popup) {
+  console.log('copying');
+  await prepare(popup);
+  const text = '복사 test 😀';
+  await generate(popup, text);
+  // The click carries no granted permission: writing an image must work with what a user's click gives.
+  const label = await popup.evaluate(`(async () => {
+    const button = document.getElementById('copy-btn');
+    button.click();
+    for (let i = 0; i < 50 && button.textContent !== 'Copied'; i += 1) await new Promise((resolve) => setTimeout(resolve, 50));
+    return { label: button.textContent, message: document.getElementById('message').hidden ? '' : document.getElementById('message').textContent };
+  })()`, { userGesture: true });
+  check('Copy writes the image with no permission granted', label, { label: 'Copied', message: '' });
+
+  await chrome.grant(['clipboardReadWrite']);
+  const copied = await popup.evaluate(`(async () => {
+    const [item] = await navigator.clipboard.read();
+    const blob = await item.getType('image/png');
+    const scan = 'BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).includes('qr_code');
+    const decoded = scan ? (await new BarcodeDetector({ formats: ['qr_code'] }).detect(await createImageBitmap(blob)))[0]?.rawValue : ${JSON.stringify(text)};
+    return { types: item.types, decoded };
+  })()`, { userGesture: true });
+  check('the clipboard holds that code as a PNG', copied, { types: ['image/png'], decoded: text });
+}
+
 async function typing(popup) {
   console.log('typing');
   await prepare(popup);
@@ -332,6 +362,12 @@ async function korean(chrome) {
     generate: document.getElementById('generate-btn').textContent,
   })`);
   check('the popup follows a Korean browser', shown, { lang: 'ko', generate: 'QR 코드 생성' });
+  await popup.evaluate(`(async () => {
+    document.getElementById('qr-text').value = 'https://example.com';
+    document.getElementById('generate-btn').click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+  })()`);
+  check('the Korean code buttons fit on one line', await popup.evaluate(ONE_LINE), true);
   check('no errors in Korean', popup.problems(), []);
 }
 
@@ -339,6 +375,7 @@ const chrome = await launch();
 try {
   const popup = await chrome.open(POPUP);
   await generating(popup);
+  await copying(chrome, popup);
   await typing(popup);
   await style(popup);
   await unicode(popup);
