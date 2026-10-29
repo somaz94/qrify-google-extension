@@ -6,6 +6,11 @@
     --input-bg: #ffffff;
     --button-bg: #1a73e8;
     --button-hover: #1557b0;
+    --button-text: #ffffff;
+    --url-bg: #188038;
+    --url-hover: #146c2e;
+    --share-bg: #1967d2;
+    --share-hover: #185abc;
 }
 
 [data-theme="dark"] {
@@ -15,6 +20,11 @@
     --input-bg: #303134;
     --button-bg: #8ab4f8;
     --button-hover: #93b7f8;
+    --button-text: #202124;
+    --url-bg: #81c995;
+    --url-hover: #a8dab5;
+    --share-bg: #a8c7fa;
+    --share-hover: #c2d7fa;
 }
 
 body {
@@ -60,12 +70,16 @@ input {
 button {
     padding: 8px 16px;
     background-color: var(--button-bg);
-    color: var(--text-color);
+    color: var(--button-text);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: var(--button-hover);
 }
 
 .style-section {
@@ -93,11 +107,11 @@ h1 {
 }
 
 #current-url-btn {
-    background-color: #34a853;
+    background-color: var(--url-bg);
 }
 
 #current-url-btn:hover {
-    background-color: #2d8544;
+    background-color: var(--url-hover);
 }
 
 .qr-section {
@@ -135,11 +149,11 @@ h1 {
 }
 
 #share-btn {
-    background-color: #4285f4;
+    background-color: var(--share-bg);
 }
 
 #share-btn:hover {
-    background-color: #3367d6;
+    background-color: var(--share-hover);
 }
 
 input[type="color"] {

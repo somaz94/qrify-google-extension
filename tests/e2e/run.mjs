@@ -180,12 +180,32 @@ async function menus(chrome) {
   await popup.close();
 }
 
+// WCAG AA asks 4.5:1 for normal text.
+const BUTTON_CONTRAST = `(() => {
+  const luminance = (color) => {
+    const [r, g, b] = color.match(/\\d+/g).slice(0, 3).map((value) => {
+      const channel = value / 255;
+      return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  return ['generate-btn', 'current-url-btn', 'download-btn', 'share-btn'].filter((id) => {
+    const style = getComputedStyle(document.getElementById(id));
+    const [light, dark] = [luminance(style.color), luminance(style.backgroundColor)].sort((a, b) => b - a);
+    return (light + 0.05) / (dark + 0.05) < 4.5;
+  });
+})()`;
+
 async function theme(popup) {
   console.log('theme');
   await prepare(popup);
   check('starts light', (await state(popup)).theme, 'light');
+  check('button text is readable in the light theme', await popup.evaluate(BUTTON_CONTRAST), []);
   await popup.evaluate(`document.getElementById('theme-toggle').click()`);
   check('the toggle switches to dark', (await state(popup)).theme, 'dark');
+  // The buttons fade to the new colors over 0.2 s.
+  await popup.evaluate(`new Promise((resolve) => setTimeout(resolve, 300))`);
+  check('button text is readable in the dark theme', await popup.evaluate(BUTTON_CONTRAST), []);
   await popup.reload();
   check('dark survives reopening the popup', (await state(popup)).theme, 'dark');
 }
