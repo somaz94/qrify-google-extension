@@ -1,4 +1,4 @@
-.PHONY: help install test test-cover lint lint-fix package version bump-version clean
+.PHONY: help install test test-cover e2e lint lint-fix package version bump-version clean
 
 PACKAGE := dist/qrify.zip
 
@@ -13,6 +13,9 @@ test: ## Run unit tests
 
 test-cover: ## Run tests with coverage (fails under 90%)
 	npm run test:coverage
+
+e2e: ## Drive the real popup in Chrome for Testing
+	node tests/e2e/run.mjs
 
 lint: ## Run ESLint
 	npm run lint

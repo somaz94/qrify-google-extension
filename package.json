@@ -7,8 +7,8 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest --maxWorkers=2",
     "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --maxWorkers=2 --coverage",
-    "lint": "eslint src/ tests/",
-    "lint:fix": "eslint src/ tests/ --fix"
+    "lint": "eslint src/ tests/ hack/",
+    "lint:fix": "eslint src/ tests/ hack/ --fix"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
