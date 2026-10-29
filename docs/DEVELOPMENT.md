@@ -40,7 +40,7 @@ Plain ES modules, loaded straight from `src/` with no bundler. Each directory ha
 
 ### Encoding
 
-`encode()` in `src/lib/qr.js` hands qrcode-generator the UTF-8 bytes of the text from `TextEncoder`, one character per byte in byte mode, so Korean, emoji and any other Unicode text scan back unchanged. The code always uses the highest error correction level (H) and the smallest version that fits; text that fits no version returns `null` and the popup says it is too long. `layout()` picks whole-pixel modules close to the chosen size, so edges stay sharp, and `paint()` draws them with a four-module light margin, which scanners need to find the code.
+`encode()` in `src/lib/qr.js` hands qrcode-generator the UTF-8 bytes of the text from `TextEncoder`, one character per byte in byte mode, so Korean, emoji and any other Unicode text scan back unchanged. The code always uses the highest error correction level (H) and the smallest version that fits; text that fits no version returns `null` and the popup says it is too long. `layout()` picks whole-pixel modules close to the chosen size, so edges stay sharp, and `paint()` draws them with a four-module light margin, which scanners need to find the code. `toSvg()` writes the same modules and margin as a vector file for the SVG download.
 
 To update the encoder, run `npm pack qrcode-generator`, copy `package/dist/qrcode.mjs` over `src/vendor/qrcode.js`, and run `make test e2e`.
 

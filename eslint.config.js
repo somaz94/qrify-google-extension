@@ -9,6 +9,7 @@ const browser = {
   fetch: 'readonly',
   File: 'readonly',
   ClipboardItem: 'readonly',
+  Blob: 'readonly',
   setTimeout: 'readonly',
   URL: 'readonly',
   URLSearchParams: 'readonly',

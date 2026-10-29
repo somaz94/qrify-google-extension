@@ -35,3 +35,14 @@ export function paint(context, modules, box, { dark, light }) {
     if (isDark) context.fillRect(box.margin + x * box.module, box.margin + y * box.module, box.module, box.module);
   }));
 }
+
+/**
+ * `modules` as an SVG document with the quiet zone, in module units scaled to `box`, so it prints sharp at any
+ * size. The colors come from color inputs, which only ever give `#rrggbb`.
+ */
+export function toSvg(modules, box, { dark, light }) {
+  const side = modules.length + 2 * QUIET_MODULES;
+  const path = modules.flatMap((row, y) => row.flatMap((isDark, x) => (isDark ? [`M${x + QUIET_MODULES} ${y + QUIET_MODULES}h1v1h-1z`] : []))).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${box.total}" height="${box.total}" viewBox="0 0 ${side} ${side}" shape-rendering="crispEdges">`
+    + `<rect width="${side}" height="${side}" fill="${light}"/><path d="${path}" fill="${dark}"/></svg>\n`;
+}

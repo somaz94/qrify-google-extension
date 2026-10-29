@@ -166,6 +166,8 @@ export async function launch({ language = 'en', timeZone = 'UTC' } = {}) {
     open,
     pageUrls,
     serviceWorker,
+    /** Saves downloads into `dir` instead of asking where. */
+    allowDownloads: (dir) => send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: dir }),
     /** Grants the extension browser permissions such as `clipboardReadWrite`, so a test can read what it wrote. */
     grant: (permissions) => send('Browser.grantPermissions', { origin: ORIGIN, permissions }),
     async close() {

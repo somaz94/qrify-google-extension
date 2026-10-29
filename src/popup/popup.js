@@ -2,7 +2,7 @@ import { applyTranslations, t } from '../i18n.js';
 import { debounce } from '../lib/debounce.js';
 import { addEntry, loadHistory, newestFirst, removeEntry, saveHistory } from '../lib/history.js';
 import { queuedText } from '../lib/menus.js';
-import { encode, layout, paint } from '../lib/qr.js';
+import { encode, layout, paint, toSvg } from '../lib/qr.js';
 import { canShareImage } from '../lib/share.js';
 import { loadStyle, saveStyle, validStyle } from '../lib/style.js';
 import qrcode from '../vendor/qrcode.js';
@@ -17,6 +17,9 @@ const qrSize = document.getElementById('qr-size');
 const downloadBtn = document.getElementById('download-btn');
 const shareBtn = document.getElementById('share-btn');
 const copyBtn = document.getElementById('copy-btn');
+const svgBtn = document.getElementById('svg-btn');
+// The modules of the code on screen, for the SVG download.
+let shown = null;
 const themeToggle = document.getElementById('theme-toggle');
 const message = document.getElementById('message');
 
@@ -36,7 +39,9 @@ function generateQRCode({ quiet = false, save = true } = {}) {
   }
   say(null);
   qrCodeDiv.replaceChildren(drawCode(text, modules));
+  shown = { text, modules };
   downloadBtn.classList.remove('hidden');
+  svgBtn.classList.remove('hidden');
   copyBtn.classList.remove('hidden');
   shareBtn.classList.toggle('hidden', !canShareImage());
   if (save) remember(text);
@@ -50,7 +55,9 @@ function say(key) {
 
 function clearCode() {
   qrCodeDiv.replaceChildren();
+  shown = null;
   downloadBtn.classList.add('hidden');
+  svgBtn.classList.add('hidden');
   copyBtn.classList.add('hidden');
   shareBtn.classList.add('hidden');
 }
@@ -142,6 +149,20 @@ async function shareQRCode() {
   }
 }
 
+function downloadSvg() {
+  if (!shown) return;
+  remember(shown.text);
+  const box = layout(Number.parseInt(qrSize.value, 10), shown.modules.length);
+  const svg = toSvg(shown.modules, box, { dark: qrColor.value, light: bgColor.value });
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+  const link = document.createElement('a');
+  link.download = 'qrify-code.svg';
+  link.href = url;
+  link.click();
+  // Chrome reads the blob when the download starts, not on click, so the URL outlives this task.
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
 async function copyQRCode() {
   const img = qrCodeDiv.querySelector('img');
   if (!img) return;
@@ -209,6 +230,7 @@ qrText.addEventListener('keydown', (event) => {
 document.getElementById('current-url-btn').addEventListener('click', useCurrentTabUrl);
 downloadBtn.addEventListener('click', downloadQRCode);
 copyBtn.addEventListener('click', copyQRCode);
+svgBtn.addEventListener('click', downloadSvg);
 shareBtn.addEventListener('click', shareQRCode);
 for (const control of [qrColor, bgColor, qrSize]) control.addEventListener('change', restyle);
 themeToggle.addEventListener('click', () => renderTheme(themer.toggle()));

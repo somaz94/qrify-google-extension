@@ -50,6 +50,9 @@
   "download": {
     "message": "다운로드"
   },
+  "downloadSvg": {
+    "message": "SVG"
+  },
   "copy": {
     "message": "복사"
   },

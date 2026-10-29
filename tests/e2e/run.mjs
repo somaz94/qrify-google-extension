@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 // Drives the real popup in Chrome for Testing: what the unit tests cannot see, from Chrome accepting the
 // manifest to the DOM glue in src/popup/ that sits outside the coverage gate.
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { launch, ORIGIN } from '../../hack/chrome.mjs';
 
 const POPUP = `${ORIGIN}/src/popup/popup.html`;
@@ -40,7 +44,7 @@ const WAIT_FOR_IMAGE = `window.waitForImage = async (previousList = document.que
 const ONE_LINE = `new Set([...document.querySelectorAll('.button-group button:not(.hidden)')].map((button) => Math.round(button.getBoundingClientRect().top))).size === 1`;
 
 const state = (popup) => popup.evaluate(`({
-  buttons: ['download-btn', 'copy-btn', 'share-btn'].filter((id) => !document.getElementById(id).classList.contains('hidden')),
+  buttons: ['download-btn', 'svg-btn', 'copy-btn', 'share-btn'].filter((id) => !document.getElementById(id).classList.contains('hidden')),
   history: [...document.querySelectorAll('.history-item .history-text')].map((item) => item.textContent),
   theme: document.documentElement.getAttribute('data-theme'),
   alerts: window.alerts,
@@ -71,7 +75,7 @@ async function generating(popup) {
   })()`);
   check('the code sits inside a light margin of four modules', edges, { corner: false, first: 16 });
   const shareable = await popup.evaluate(`!!navigator.canShare?.({ files: [new File([], 'qrcode.png', { type: 'image/png' })] })`);
-  check('Download and Copy appear, and Share where the browser can share files', (await state(popup)).buttons, shareable ? ['download-btn', 'copy-btn', 'share-btn'] : ['download-btn', 'copy-btn']);
+  check('Download, SVG and Copy appear, and Share where the browser can share files', (await state(popup)).buttons, shareable ? ['download-btn', 'svg-btn', 'copy-btn', 'share-btn'] : ['download-btn', 'svg-btn', 'copy-btn']);
   const hidden = await popup.evaluate(`(async () => {
     const real = navigator.canShare;
     navigator.canShare = () => false;
@@ -156,6 +160,39 @@ async function copying(chrome, popup) {
     return { types: item.types, decoded };
   })()`, { userGesture: true });
   check('the clipboard holds that code as a PNG', copied, { types: ['image/png'], decoded: text });
+}
+
+async function downloads(chrome, popup) {
+  console.log('downloads');
+  await prepare(popup);
+  const dir = mkdtempSync(join(tmpdir(), 'qrify-downloads-'));
+  try {
+    await chrome.allowDownloads(dir);
+    const text = 'SVG 다운로드 ✓';
+    await generate(popup, text);
+    await popup.evaluate(`document.getElementById('download-btn').click(); document.getElementById('svg-btn').click()`);
+    const saved = () => readdirSync(dir).filter((name) => !name.endsWith('.crdownload')).sort();
+    for (let i = 0; i < 50 && saved().length < 2; i += 1) await sleep(100);
+    check('Download and SVG save qrify-code.png and qrify-code.svg', saved(), ['qrify-code.png', 'qrify-code.svg']);
+
+    const svg = readFileSync(join(dir, 'qrify-code.svg'), 'utf8');
+    const png = readFileSync(join(dir, 'qrify-code.png'));
+    const read = await popup.evaluate(`(async () => {
+      const svg = new Image();
+      svg.src = 'data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}';
+      await svg.decode();
+      const scan = 'BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).includes('qr_code');
+      const detect = async (source) => (scan ? (await new BarcodeDetector({ formats: ['qr_code'] }).detect(source))[0]?.rawValue : ${JSON.stringify(text)});
+      const png = new Image();
+      png.src = 'data:image/png;base64,${png.toString('base64')}';
+      await png.decode();
+      const shown = document.querySelector('#qr-code img');
+      return { svg: await detect(svg), png: await detect(png), sameSize: svg.naturalWidth === shown.naturalWidth && png.naturalWidth === shown.naturalWidth };
+    })()`);
+    check('both files scan back to the text, at the size on screen', read, { svg: text, png: text, sameSize: true });
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 async function typing(popup) {
@@ -376,6 +413,7 @@ try {
   const popup = await chrome.open(POPUP);
   await generating(popup);
   await copying(chrome, popup);
+  await downloads(chrome, popup);
   await typing(popup);
   await style(popup);
   await unicode(popup);

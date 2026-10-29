@@ -50,6 +50,9 @@
   "download": {
     "message": "Download"
   },
+  "downloadSvg": {
+    "message": "SVG"
+  },
   "copy": {
     "message": "Copy"
   },

@@ -1,5 +1,5 @@
 import { describe, test, expect } from '@jest/globals';
-import { encode, layout, paint, QUIET_MODULES } from '../src/lib/qr.js';
+import { encode, layout, paint, QUIET_MODULES, toSvg } from '../src/lib/qr.js';
 import qrcode from '../src/vendor/qrcode.js';
 
 describe('encode', () => {
@@ -50,5 +50,14 @@ describe('paint', () => {
     };
     paint(context, [[true, false], [false, true]], { module: 3, margin: 12, total: 30 }, { dark: '#000', light: '#fff' });
     expect(calls).toEqual([['color', '#fff'], [0, 0, 30, 30], ['color', '#000'], [12, 12, 3, 3], [15, 15, 3, 3]]);
+  });
+});
+
+describe('toSvg', () => {
+  test('draws each dark module inside the quiet zone, at the pixel size of the PNG', () => {
+    expect(toSvg([[true, false], [false, true]], { total: 30 }, { dark: '#000000', light: '#ffffff' })).toBe(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 10 10" shape-rendering="crispEdges">'
+      + '<rect width="10" height="10" fill="#ffffff"/><path d="M4 4h1v1h-1zM5 5h1v1h-1z" fill="#000000"/></svg>\n',
+    );
   });
 });
