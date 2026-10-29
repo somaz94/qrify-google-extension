@@ -3,7 +3,7 @@
     "message": "en"
   },
   "extDescription": {
-    "message": "Simple QR code generator extension"
+    "message": "Turn text, the current page or a right-clicked link, image or selection into a QR code in your colors and size. Works offline."
   },
   "commandOpen": {
     "message": "Open the QR code generator"

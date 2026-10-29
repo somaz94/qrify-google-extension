@@ -1,54 +1,23 @@
-# QRify - QR Code Generator Chrome Extension
+# QRify
 
-QRify is a Chrome extension that allows you to quickly and easily generate QR codes.
+A Chrome extension that turns text, the page you are on, or a link, image or selection you right-click into a QR code, in your colors and size.
 
-<br/>
+Every code is drawn in your browser. QRify makes no network requests and keeps nothing but your recent codes and your theme, on your own browser.
 
-## Screenshot
-<img src="./img/app.png" width="300" alt="QRify App">
+<img src="./store/screenshots/en/1.png" width="640" alt="QRify making a QR code for a link">
 
 <br/>
 
 ## Features
 
-- Convert text/URLs to QR codes
-- Instantly convert current tab's URL to QR code
-- QR code customization
-  - Color options (QR code color, background color)
-  - Size options (Extra small, Small, Medium, Large)
-- Dark mode support
-- Download QR codes
-- Copy to clipboard
-- Recent history (up to 10 entries)
-- English and Korean, following the browser language
-
-<br/>
-
-## How to Use
-
-1. Install the extension in Chrome browser
-2. Click the QRify icon in the toolbar
-3. Enter text or click 'Current Page URL' button
-4. Click generate QR code button
-5. Customize QR code as needed
-6. Use download or share functions
-
-<br/>
-
-## Development
-
-- Chrome Extension Manifest V3
-- HTML/CSS/JavaScript
-- QRCode.js library
-- Every user-visible string is a key in `_locales/<language>/messages.json`; a new string needs the key in every language
-- `make test` checks that the catalogs have the same keys and placeholders, and that every key the code uses exists
-- `make package` writes the Chrome Web Store ZIP to `dist/`; `make help` lists every target
-
-### Release
-
-1. `make bump-version VERSION=x.y.z`, then commit `manifest.json`
-2. Push an annotated tag `vX.Y.Z`; the release workflow builds `qrify-vX.Y.Z.zip` and attaches it to a GitHub Release with notes from git-cliff
-3. Upload that ZIP in the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
+- **Any text or URL**, typed in or taken from the current page with **Current page URL**
+- **Right-click menus** for selected text, a link or an image address; the code opens in a new tab
+- **Unicode**: Korean, emoji and any other text are encoded as UTF-8 and scan back exactly
+- **Colors and sizes**: pick the code and background colors and one of four sizes; the four-module margin scanners need is always drawn
+- **Download** the code as a PNG, or **Share** it through the system share sheet
+- **Recent** list of your last codes with their colors and size, one click from reopening
+- A light and a dark theme, and **English and Korean**, following the browser language
+- `Ctrl+Shift+Q` (`Cmd+Shift+Q` on macOS) opens the popup
 
 <br/>
 
@@ -56,16 +25,54 @@ QRify is a Chrome extension that allows you to quickly and easily generate QR co
 
 ### From Chrome Web Store
 1. Visit [QRify](https://chromewebstore.google.com/detail/qrify/lkencifnlcbcfjdpkooejabmgkmdgpee)
-2. Click "Add to Chrome"
+2. Click **Add to Chrome**
 
 ### From Source
-1. Clone or download this repository
-2. Open `chrome://extensions` in Chrome browser
-3. Enable 'Developer mode' in the top right
-4. Click 'Load unpacked'
-5. Select the downloaded folder
+
+```bash
+git clone https://github.com/somaz94/qrify-google-extension.git
+```
+
+1. Open `chrome://extensions/`
+2. Turn on **Developer mode**
+3. Click **Load unpacked** and select the cloned directory
+
+<br/>
+
+## Usage
+
+1. Click the toolbar icon, or press `Ctrl+Shift+Q`
+2. Type text or a URL, or press **Current page URL**
+3. Press **Generate QR code**; changing a color or the size redraws it
+4. **Download** or **Share** the code, or pick an earlier one from **Recent**
+
+On any page, right-click selected text, a link or an image and pick the QRify entry to open its code in a new tab.
+
+<br/>
+
+## Permissions
+
+| Permission | Why |
+|---|---|
+| `activeTab` | **Current page URL** reads the address of the tab you are on |
+| `contextMenus` | The right-click entries |
+| `storage` | The recent list and the theme |
+
+<br/>
+
+## Privacy
+
+QRify keeps your recent codes and your theme in the browser's extension storage, on this browser only, and sends nothing anywhere. See [Privacy](docs/PRIVACY.md).
+
+<br/>
+
+## Documentation
+
+- [Development](docs/DEVELOPMENT.md): local setup, architecture, the QR encoder, tests, translations, publishing
+- [Privacy](docs/PRIVACY.md): what is stored and where
 
 <br/>
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+[MIT](LICENSE)

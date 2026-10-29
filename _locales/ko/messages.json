@@ -3,7 +3,7 @@
     "message": "ko"
   },
   "extDescription": {
-    "message": "간단한 QR 코드 생성기"
+    "message": "텍스트, 현재 페이지, 우클릭한 링크·이미지·선택한 텍스트를 원하는 색과 크기의 QR 코드로 만듭니다. 오프라인에서 동작합니다."
   },
   "commandOpen": {
     "message": "QR 코드 생성기 열기"
