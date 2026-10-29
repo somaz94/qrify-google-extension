@@ -89,6 +89,18 @@ async function history(popup) {
     return document.getElementById('qr-text').value;
   })()`);
   check('clicking an entry brings its text back', restored, 'first');
+
+  const tricky = 'say "hi" <b>bold</b> & more';
+  await generate(popup, tricky);
+  const shown = await popup.evaluate(`(async () => {
+    const item = document.querySelector('.history-item');
+    const listed = { text: item.querySelector('.history-text').textContent, markup: !!item.querySelector('b') };
+    document.getElementById('qr-text').value = '';
+    item.click();
+    await waitForImage();
+    return { ...listed, restored: document.getElementById('qr-text').value };
+  })()`);
+  check('quotes and markup are listed and restored as plain text', shown, { text: tricky, markup: false, restored: tricky });
 }
 
 async function menus(chrome) {

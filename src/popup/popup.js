@@ -38,33 +38,34 @@ async function remember(text) {
 function renderHistory(history) {
   document.querySelector('.history-section')?.remove();
 
-  const section = document.createElement('div');
-  section.className = 'history-section';
-  section.innerHTML = `
-    <h3>${t('historyTitle')}</h3>
-    <div class="history-list">
-      ${newestFirst(history).map((item) => `
-        <div class="history-item" data-text="${item.text}"
-             data-qr-color="${item.qrColor}"
-             data-bg-color="${item.bgColor}"
-             data-size="${item.size}">
-          <span class="history-text">${item.text}</span>
-          <span class="history-time">${new Date(item.timestamp).toLocaleString()}</span>
-        </div>
-      `).join('')}
-    </div>
-  `;
-  document.querySelector('.container').appendChild(section);
-
-  for (const item of section.querySelectorAll('.history-item')) {
+  const section = element('div', 'history-section');
+  const title = element('h3');
+  title.textContent = t('historyTitle');
+  const list = element('div', 'history-list');
+  for (const entry of newestFirst(history)) {
+    const item = element('div', 'history-item');
+    const text = element('span', 'history-text');
+    text.textContent = entry.text;
+    const time = element('span', 'history-time');
+    time.textContent = new Date(entry.timestamp).toLocaleString();
+    item.append(text, time);
     item.addEventListener('click', () => {
-      qrText.value = item.dataset.text;
-      qrColor.value = item.dataset.qrColor;
-      bgColor.value = item.dataset.bgColor;
-      qrSize.value = item.dataset.size;
+      qrText.value = entry.text;
+      qrColor.value = entry.qrColor;
+      bgColor.value = entry.bgColor;
+      qrSize.value = entry.size;
       generateQRCode();
     });
+    list.append(item);
   }
+  section.append(title, list);
+  document.querySelector('.container').append(section);
+}
+
+function element(tag, className) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  return node;
 }
 
 async function shareQRCode() {
