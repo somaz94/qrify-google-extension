@@ -14,6 +14,11 @@ describe('history', () => {
     expect(full).toHaveLength(HISTORY_LIMIT);
   });
 
+  test('addEntry moves an existing text to the newest place instead of adding it twice', () => {
+    const history = addEntry([{ text: 'a', size: '128' }, entry('b')], { text: 'a', size: '256' });
+    expect(history).toEqual([entry('b'), { text: 'a', size: '256' }]);
+  });
+
   test('newestFirst reverses without touching the stored order', () => {
     const history = [entry('a'), entry('b')];
     expect(newestFirst(history)).toEqual([entry('b'), entry('a')]);

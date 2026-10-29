@@ -14,10 +14,10 @@ const downloadBtn = document.getElementById('download-btn');
 const shareBtn = document.getElementById('share-btn');
 const themeToggle = document.getElementById('theme-toggle');
 
-function generateQRCode() {
+function generateQRCode({ quiet = false } = {}) {
   const text = qrText.value.trim();
   if (!text) {
-    alert(t('errorEmptyText'));
+    if (!quiet) alert(t('errorEmptyText'));
     return;
   }
 
@@ -111,7 +111,7 @@ document.getElementById('generate-btn').addEventListener('click', generateQRCode
 document.getElementById('current-url-btn').addEventListener('click', useCurrentTabUrl);
 downloadBtn.addEventListener('click', downloadQRCode);
 shareBtn.addEventListener('click', shareQRCode);
-for (const control of [qrColor, bgColor, qrSize]) control.addEventListener('change', generateQRCode);
+for (const control of [qrColor, bgColor, qrSize]) control.addEventListener('change', () => generateQRCode({ quiet: true }));
 themeToggle.addEventListener('click', () => {
   const theme = nextTheme(document.documentElement.getAttribute('data-theme'));
   showTheme(theme);

@@ -59,8 +59,12 @@ async function generating(popup) {
   })()`);
   check('changing the size redraws the code', resized, { width: 256, height: 256 });
 
+  check('a redraw does not add the same text again', (await state(popup)).history, ['https://example.com']);
+
   await popup.evaluate(`document.getElementById('qr-text').value = '   '; document.getElementById('generate-btn').click()`);
   check('an empty input asks for text', (await state(popup)).alerts, ['Enter some text first.']);
+  await popup.evaluate(`document.getElementById('qr-color').dispatchEvent(new Event('change'))`);
+  check('changing a color with no text says nothing', (await state(popup)).alerts, ['Enter some text first.']);
 
   const url = await popup.evaluate(`(async () => {
     document.getElementById('current-url-btn').click();
@@ -89,6 +93,7 @@ async function history(popup) {
     return document.getElementById('qr-text').value;
   })()`);
   check('clicking an entry brings its text back', restored, 'first');
+  check('and moves it up instead of adding it again', (await state(popup)).history, ['first', 'second']);
 
   const tricky = 'say "hi" <b>bold</b> & more';
   await generate(popup, tricky);

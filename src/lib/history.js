@@ -1,9 +1,9 @@
 export const HISTORY_KEY = 'qrHistory';
 export const HISTORY_LIMIT = 10;
 
-/** The history with `entry` appended, keeping the newest `HISTORY_LIMIT` entries. */
+/** The history with `entry` as the newest, replacing an entry for the same text, capped at `HISTORY_LIMIT`. */
 export function addEntry(history, entry) {
-  return [...history, entry].slice(-HISTORY_LIMIT);
+  return [...history.filter((item) => item.text !== entry.text), entry].slice(-HISTORY_LIMIT);
 }
 
 export function newestFirst(history) {
