@@ -16,25 +16,33 @@ const qrSize = document.getElementById('qr-size');
 const downloadBtn = document.getElementById('download-btn');
 const shareBtn = document.getElementById('share-btn');
 const themeToggle = document.getElementById('theme-toggle');
+const message = document.getElementById('message');
 
-/** Draws the code for the input; `save` also adds it to the recent list, `quiet` skips the alerts. */
+/** Draws the code for the input; `save` also adds it to the recent list, `quiet` keeps problems unsaid. */
 function generateQRCode({ quiet = false, save = true } = {}) {
   const text = qrText.value.trim();
   if (!text) {
     clearCode();
-    if (!quiet) alert(t('errorEmptyText'));
+    if (!quiet) say('errorEmptyText');
     return;
   }
 
   const modules = encode(text, qrcode);
   if (!modules) {
-    if (!quiet) alert(t('errorTooLong'));
+    if (!quiet) say('errorTooLong');
     return;
   }
+  say(null);
   qrCodeDiv.replaceChildren(drawCode(text, modules));
   downloadBtn.classList.remove('hidden');
   shareBtn.classList.remove('hidden');
   if (save) remember(text);
+}
+
+/** Shows the message for `key` under the input, or hides it for `null`. */
+function say(key) {
+  message.hidden = !key;
+  message.textContent = key ? t(key) : '';
 }
 
 function clearCode() {
@@ -99,7 +107,7 @@ function element(tag, className) {
 async function shareQRCode() {
   const img = qrCodeDiv.querySelector('img');
   if (!img || !navigator.share) {
-    alert(t('shareUnsupported'));
+    say('shareUnsupported');
     return;
   }
   remember(img.alt);
@@ -110,7 +118,7 @@ async function shareQRCode() {
   } catch (error) {
     if (error.name !== 'AbortError') {
       console.error('Sharing failed:', error);
-      alert(t('shareFailed'));
+      say('shareFailed');
     }
   }
 }
@@ -156,7 +164,10 @@ document.getElementById('generate-btn').addEventListener('click', () => {
   preview.cancel();
   generateQRCode();
 });
-qrText.addEventListener('input', preview);
+qrText.addEventListener('input', () => {
+  say(null);
+  preview();
+});
 qrText.addEventListener('keydown', (event) => {
   if (event.key !== 'Enter' || event.isComposing) return;
   preview.cancel();

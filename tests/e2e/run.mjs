@@ -12,7 +12,7 @@ function check(name, actual, expected) {
   console.log(ok ? `  ✓ ${name}` : `  ✗ ${name}\n      expected ${JSON.stringify(expected)}\n      actual   ${JSON.stringify(actual)}`);
 }
 
-// A real alert() would block every later DevTools call, so the page records them instead.
+// The popup shows problems inline; a real alert() would also block every later DevTools call, so any is recorded.
 const CAPTURE_ALERTS = `window.alerts = []; window.alert = (message) => window.alerts.push(message);`;
 
 /** Types `text`, clicks Generate and waits for the image the QR library draws from its canvas. */
@@ -41,6 +41,7 @@ const state = (popup) => popup.evaluate(`({
   history: [...document.querySelectorAll('.history-item .history-text')].map((item) => item.textContent),
   theme: document.documentElement.getAttribute('data-theme'),
   alerts: window.alerts,
+  message: document.getElementById('message').hidden ? '' : document.getElementById('message').textContent,
 })`);
 
 async function prepare(popup) {
@@ -99,9 +100,11 @@ async function generating(popup) {
   check('a redraw does not add the same text again', (await state(popup)).history, ['https://example.com']);
 
   await popup.evaluate(`document.getElementById('qr-text').value = '   '; document.getElementById('generate-btn').click()`);
-  check('an empty input asks for text', (await state(popup)).alerts, ['Enter some text first.']);
+  check('an empty input asks for text, in the popup', await state(popup).then(({ alerts, message }) => ({ alerts, message })), { alerts: [], message: 'Enter some text first.' });
   await popup.evaluate(`document.getElementById('qr-color').dispatchEvent(new Event('change'))`);
-  check('changing a color with no text says nothing', (await state(popup)).alerts, ['Enter some text first.']);
+  check('changing a color with no text says nothing new', await state(popup).then(({ alerts, message }) => ({ alerts, message })), { alerts: [], message: 'Enter some text first.' });
+  await popup.evaluate(`document.getElementById('qr-text').dispatchEvent(new Event('input'))`);
+  check('typing clears the message', (await state(popup)).message, '');
 
   const url = await popup.evaluate(`(async () => {
     document.getElementById('current-url-btn').click();
@@ -177,7 +180,9 @@ async function unicode(popup) {
   if (!canDecode) console.log('    (no BarcodeDetector here: drawn, not scanned)');
 
   await popup.evaluate(`document.getElementById('qr-text').value = 'x'.repeat(5000); document.getElementById('generate-btn').click()`);
-  check('a text too long for a QR code says so', (await state(popup)).alerts, ['This text is too long for a QR code.']);
+  check('a text too long for a QR code says so', await state(popup).then(({ alerts, message }) => ({ alerts, message })), { alerts: [], message: 'This text is too long for a QR code.' });
+  await generate(popup, 'short again');
+  check('a drawn code clears the message', (await state(popup)).message, '');
 }
 
 async function history(popup) {

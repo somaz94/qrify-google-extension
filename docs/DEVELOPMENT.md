@@ -61,7 +61,7 @@ After a change to `popup.html`, `popup.js` or the service worker, run `make e2e`
 The popup and the menus follow the browser language through Chrome's `_locales`: English is the default, Korean is in `_locales/ko/`.
 
 - A string is a key in `_locales/en/messages.json` and in every other `_locales/<language>/messages.json`, written as `{ "message": "..." }`. Positional values are `$1` to `$9`
-- In HTML, set `data-i18n="key"` for text or `data-i18n-placeholder` / `data-i18n-title` / `data-i18n-aria-label` for attributes; in JavaScript, call `t('key')` from `src/i18n.js`; a menu names its key in `title` in `src/lib/menus.js`
+- In HTML, set `data-i18n="key"` for text or `data-i18n-placeholder` / `data-i18n-title` / `data-i18n-aria-label` for attributes; in JavaScript, call `t('key')` from `src/i18n.js`, or `say('key')` in `popup.js` for the message under the input; a menu names its key in `title` in `src/lib/menus.js`
 - `tests/locales.test.js` fails when a language misses a key, a placeholder differs, a key the code names does not exist, or a key is no longer used
 - In Jest, `tests/setup/chrome-i18n.cjs` serves the English catalog as `chrome.i18n`, so tests assert the English text
 - `tests/manifest.test.js` checks that the store summary (`extDescription`) fits the store's 132 characters in every language, and that both `make package` and the release workflow ship `_locales/`

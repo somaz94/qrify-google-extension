@@ -11,6 +11,7 @@
     --url-hover: #146c2e;
     --share-bg: #1967d2;
     --share-hover: #185abc;
+    --error-text: #c5221f;
 }
 
 [data-theme="dark"] {
@@ -25,6 +26,7 @@
     --url-hover: #a8dab5;
     --share-bg: #a8c7fa;
     --share-hover: #c2d7fa;
+    --error-text: #f28b82;
 }
 
 body {
@@ -212,4 +214,14 @@ input[type="color"] {
 .history-time {
     flex-shrink: 0;
     opacity: 0.7;
+}
+
+.message {
+    margin: 0;
+    font-size: 13px;
+    color: var(--error-text);
+}
+
+.message[hidden] {
+    display: none;
 }

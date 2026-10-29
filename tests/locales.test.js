@@ -20,7 +20,7 @@ function sources(dir) {
   });
 }
 
-const REFERENCE = /data-i18n(?:-[a-z-]+)?="(\w+)"|\b(?:t|getMessage)\(\s*'(\w+)'/g;
+const REFERENCE = /data-i18n(?:-[a-z-]+)?="(\w+)"|\b(?:t|getMessage|say)\(\s*'(\w+)'/g;
 const referenced = new Set([
   ...sources('src').flatMap((text) => [...text.matchAll(REFERENCE)].map((match) => match[1] ?? match[2])),
   ...[...read('manifest.json').matchAll(/__MSG_(\w+)__/g)].map((match) => match[1]),

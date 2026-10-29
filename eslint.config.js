@@ -6,7 +6,6 @@ const browser = {
   location: 'readonly',
   navigator: 'readonly',
   console: 'readonly',
-  alert: 'readonly',
   fetch: 'readonly',
   File: 'readonly',
   setTimeout: 'readonly',
