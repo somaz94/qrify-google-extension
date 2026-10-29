@@ -2,6 +2,7 @@ import { describe, test, expect } from '@jest/globals';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { THEME_TITLES } from '../src/lib/theme.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const read = (path) => readFileSync(join(ROOT, path), 'utf8');
@@ -22,8 +23,7 @@ const REFERENCE = /data-i18n(?:-[a-z-]+)?="(\w+)"|\b(?:t|getMessage)\(\s*'(\w+)'
 const referenced = new Set([
   ...sources('src').flatMap((text) => [...text.matchAll(REFERENCE)].map((match) => match[1] ?? match[2])),
   ...[...read('manifest.json').matchAll(/__MSG_(\w+)__/g)].map((match) => match[1]),
-  // Picked at runtime by a ternary, so the pattern above cannot see it.
-  'themeToLight',
+  ...Object.values(THEME_TITLES),
 ]);
 
 describe('locales', () => {
